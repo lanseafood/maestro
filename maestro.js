@@ -157,6 +157,17 @@ function doCompose() {
 				));
 			}
 
+			if (program.ipv) {
+				console.log('Creating IPV XML format');
+				const ipvXml = new IpvXMLProcedureWriter(program, procedure);
+				ipvXml.renderIntro();
+				ipvXml.renderTasks();
+				ipvXml.writeFile(path.join(
+					program.outputPath,
+					`${procedure.filename}.ipv.xml`
+				));
+			}
+
 		});
 	});
 }
@@ -201,6 +212,7 @@ function buildProgramArguments(program, args) {
 		.option('-t, --template <.html>', 'specify a template to use')
 		.option('--html', 'Generate HTML file', null)
 		.option('--sodf', 'Generate SODF style procedure', null)
+		.option('--ipv', 'Generate IPV XML style procedure', null)
 
 		// note: this will generate an options.evaDocx property, not noEvaDocx
 		.option('--no-eva-docx', 'Don\'t generate the default EVA DOCX file', null)

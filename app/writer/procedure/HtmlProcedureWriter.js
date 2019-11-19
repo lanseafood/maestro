@@ -34,7 +34,7 @@ module.exports = class HtmlProcedureWriter extends ProcedureWriter {
 	// getIndents(levelIndex)
 
 	wrapDocument() {
-		return nunjucksEnvironment.render('document.html', {
+		return nunjucksEnvironment.render('document.xml', {
 			title: this.procedure.name,
 			content: this.content,
 			footer: this.genFooter()
@@ -48,7 +48,7 @@ module.exports = class HtmlProcedureWriter extends ProcedureWriter {
 	}
 
 	genHeader(task) {
-		return nunjucksEnvironment.render('task-header.html', {
+		return nunjucksEnvironment.render('task-header.xml', {
 			procedureName: this.procedure.name,
 			taskTitle: task.title,
 			duration: this.getTaskDurationDisplay(task)
@@ -56,7 +56,7 @@ module.exports = class HtmlProcedureWriter extends ProcedureWriter {
 	}
 
 	genFooter() {
-		return nunjucksEnvironment.render('procedure-footer.html', {
+		return nunjucksEnvironment.render('procedure-footer.xml', {
 			programName: this.program.fullName,
 			programURL: this.program.repoURL,
 			procedureName: this.procedure.name,
