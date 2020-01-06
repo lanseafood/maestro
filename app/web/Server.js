@@ -111,8 +111,6 @@ module.exports = class Server {
 			}));
 		});
 
-		this.app.post('/edit/:filetype/:filename', this.handleFileUpdates);
-
 		this.app.listen(this.port, () => {
 			consoleHelper.success(
 				`Visit http://localhost:${this.port} in your web browser. Type ctrl-c here to exit`
