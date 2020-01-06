@@ -31,6 +31,7 @@ module.exports = class Server {
 				localBase: __dirname,
 				localRelative: '../writer/nunjucks-templates'
 			}
+			{ webPath: '', localBase: __dirname, localRelative: '../../build' }
 		];
 
 		this.app.use(express.json());
