@@ -9,6 +9,7 @@ const Program = require('./Program');
 const Procedure = require('./Procedure');
 const EvaDocxProcedureWriter = require('../writer/procedure/EvaDocxProcedureWriter');
 const SodfDocxProcedureWriter = require('../writer/procedure/SodfDocxProcedureWriter');
+const SodfHtmlProcedureWriter = require('../writer/procedure/SodfHtmlProcedureWriter');
 const EvaHtmlProcedureWriter = require('../writer/procedure/EvaHtmlProcedureWriter');
 
 const Server = require('../server/Server');
@@ -79,7 +80,8 @@ module.exports = class CommanderProgram extends Program {
 		this.composeOutputTypes = [
 			{ option: 'eva-docx', desc: 'Generate EVA .docx file', prop: 'evaDocx' },
 			{ option: 'html', desc: 'Generate HTML file', prop: 'html' },
-			{ option: 'sodf', desc: 'Generate SODF style procedure', prop: 'sodf' }
+			{ option: 'sodf-docx', desc: 'Generate SODF-like .docx file', prop: 'sodfDocx' },
+			{ option: 'sodf-html', desc: 'Generate SODF-like HTML output', prop: 'sodfHtml' }
 		];
 
 	}
@@ -224,8 +226,12 @@ module.exports = class CommanderProgram extends Program {
 			});
 		}
 
-		if (this.sodf) {
-			this.renderBasicFormat(procedure, SodfDocxProcedureWriter, 'SODF', 'sodf.docx');
+		if (this.sodfDocx) {
+			this.renderBasicFormat(procedure, SodfDocxProcedureWriter, 'SODF DOCX', 'sodf.docx');
+		}
+
+		if (this.sodfHtml) {
+			this.renderBasicFormat(procedure, SodfHtmlProcedureWriter, 'SODF HTML', 'sodf.html');
 		}
 
 		if (this.html) {

@@ -23,6 +23,7 @@ module.exports = class Step {
 		this.substeps = [];
 		this.raw = null;
 		this.taskRolesMap = {};
+		this.location = '';
 		this.taskRoles = taskRoles;
 
 		this.mapTaskRolesToActor(taskRoles);
@@ -45,6 +46,10 @@ module.exports = class Step {
 		// Check for the title
 		if (stepYaml.title) {
 			this.title = this.parseTitle(stepYaml.title);
+		}
+
+		if (stepYaml.location) {
+			this.location = stepYaml.location;
 		}
 
 		// Check for the text
