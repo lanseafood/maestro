@@ -88,13 +88,15 @@ module.exports = class SodfHtmlTaskWriter extends TaskWriter {
 	 * but location stays the same, then location will be an empty string.
 	 * @param {string} actor            Actor performing step or empty string
 	 * @param {string} location         Location step is performed or empty string
-	 * @param {} steps            TBD
-	 * @return {string}               HTML output of row
+	 * @param {Object} row              Object like {
+	 *                                      stepNumber: 23,
+	 *                                      actor: 'IV',
+	 *                                      location: '',
+	 *                                      stepContent: [...]
+	 *                                  }
+	 * @return {string}                 HTML output of row
 	 */
 	createRow(actor, location, row) {
-
-		console.log(row);
-
 		return nunjucks.render('sodf/actor-location-row.html', {
 			actor: actor,
 			location: location,
@@ -105,10 +107,6 @@ module.exports = class SodfHtmlTaskWriter extends TaskWriter {
 
 	writeSeries(series, columnKeys) {
 		const steps = [];
-		// const preStep = this.preInsertSteps();
-		// if (preStep) {
-		// 	steps.push(preStep); // <ol start=12>
-		// }
 		for (const step of series) {
 			step.columnKeys = Array.isArray(columnKeys) ? columnKeys : [columnKeys];
 			const actor = step.actors[0];
@@ -120,10 +118,6 @@ module.exports = class SodfHtmlTaskWriter extends TaskWriter {
 				stepContents: this.insertStep(step)
 			});
 		}
-		// const postStep = this.postInsertSteps();
-		// if (postStep) {
-		// 	steps.push(postStep);
-		// }
 		return steps;
 	}
 
