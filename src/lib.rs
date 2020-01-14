@@ -18,7 +18,7 @@ pub fn set_panic_hook() {
 #[derive(Copy, Clone)]
 #[derive(Debug)]
 #[derive(PartialEq)]
-struct Interval(f32, f32);
+struct Interval(f64, f64);
 
 impl Display for Interval {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
@@ -129,19 +129,19 @@ mod tests {
 
         let cases = vec![
             Case {
-                in1: Interval(1_f32, 1_f32),
-                in2: Interval(2_f32, 2_f32),
-                out: Interval(3_f32, 3_f32)
+                in1: Interval(1., 1.),
+                in2: Interval(2., 2.),
+                out: Interval(3., 3.)
             },
             Case {
-                in1: Interval(0_f32, 0_f32),
-                in2: Interval(2_f32, 2_f32),
-                out: Interval(2_f32, 2_f32)
+                in1: Interval(0., 0.),
+                in2: Interval(2., 2.),
+                out: Interval(2., 2.)
             },
             Case {
-                in1: Interval(1.5_f32, 1.5_f32),
-                in2: Interval(2_f32, 2_f32),
-                out: Interval(3.5_f32, 3.5_f32)
+                in1: Interval(1.5, 1.5),
+                in2: Interval(2., 2.),
+                out: Interval(3.5, 3.5)
             },
         ];
 
@@ -162,19 +162,19 @@ mod tests {
 
         let mut cases = vec![
             Case {
-                in1: Interval(1_f32, 1_f32),
-                in2: Interval(2_f32, 2_f32),
-                out: Interval(3_f32, 3_f32)
+                in1: Interval(1., 1.),
+                in2: Interval(2., 2.),
+                out: Interval(3., 3.)
             },
             Case {
-                in1: Interval(0_f32, 0_f32),
-                in2: Interval(2_f32, 2_f32),
-                out: Interval(2_f32, 2_f32)
+                in1: Interval(0., 0.),
+                in2: Interval(2., 2.),
+                out: Interval(2., 2.)
             },
             Case {
-                in1: Interval(1.5_f32, 1.5_f32),
-                in2: Interval(2_f32, 2_f32),
-                out: Interval(3.5_f32, 3.5_f32)
+                in1: Interval(1.5, 1.5),
+                in2: Interval(2., 2.),
+                out: Interval(3.5, 3.5)
             },
         ];
 
@@ -195,19 +195,19 @@ mod tests {
 
         let cases = vec![
             Case {
-                in1: Interval(2_f32, 2_f32),
-                in2: Interval(1_f32, 1_f32),
-                out: Interval(1_f32, 1_f32)
+                in1: Interval(2., 2.),
+                in2: Interval(1., 1.),
+                out: Interval(1., 1.)
             },
             Case {
-                in1: Interval(2_f32, 2_f32),
-                in2: Interval(2_f32, 2_f32),
-                out: Interval(0_f32, 0_f32),
+                in1: Interval(2., 2.),
+                in2: Interval(2., 2.),
+                out: Interval(0., 0.),
             },
             Case {
-                in1: Interval(2_f32, 2_f32),
-                in2: Interval(1.5_f32, 1.5_f32),
-                out: Interval(0.5_f32, 0.5_f32)
+                in1: Interval(2., 2.),
+                in2: Interval(1.5, 1.5),
+                out: Interval(0.5, 0.5)
             },
         ];
 
@@ -228,19 +228,19 @@ mod tests {
 
         let mut cases = vec![
             Case {
-                in1: Interval(2_f32, 2_f32),
-                in2: Interval(1_f32, 1_f32),
-                out: Interval(1_f32, 1_f32)
+                in1: Interval(2., 2.),
+                in2: Interval(1., 1.),
+                out: Interval(1., 1.)
             },
             Case {
-                in1: Interval(2_f32, 2_f32),
-                in2: Interval(2_f32, 2_f32),
-                out: Interval(0_f32, 0_f32),
+                in1: Interval(2., 2.),
+                in2: Interval(2., 2.),
+                out: Interval(0., 0.),
             },
             Case {
-                in1: Interval(2_f32, 2_f32),
-                in2: Interval(1.5_f32, 1.5_f32),
-                out: Interval(0.5_f32, 0.5_f32)
+                in1: Interval(2., 2.),
+                in2: Interval(1.5, 1.5),
+                out: Interval(0.5, 0.5)
             },
         ];
 
@@ -261,14 +261,14 @@ mod tests {
 
         let cases = vec![
             Case {
-                in1: Interval(1_f32, 3_f32),
-                in2: Interval(2_f32, 4_f32),
-                out: Interval(2_f32, 3_f32)
+                in1: Interval(1., 3.),
+                in2: Interval(2., 4.),
+                out: Interval(2., 3.)
             },
             Case {
-                in1: Interval(0_f32, 10.1_f32),
-                in2: Interval(1_f32, 12_f32),
-                out: Interval(1_f32, 10.1_f32),
+                in1: Interval(0., 10.1),
+                in2: Interval(1., 12.),
+                out: Interval(1., 10.1),
             },
         ];
 
@@ -289,14 +289,14 @@ mod tests {
 
         let mut cases = vec![
             Case {
-                in1: Interval(1_f32, 3_f32),
-                in2: Interval(2_f32, 4_f32),
-                out: Interval(2_f32, 3_f32)
+                in1: Interval(1., 3.),
+                in2: Interval(2., 4.),
+                out: Interval(2., 3.)
             },
             Case {
-                in1: Interval(0_f32, 10.1_f32),
-                in2: Interval(1_f32, 12_f32),
-                out: Interval(1_f32, 10.1_f32),
+                in1: Interval(0., 10.1),
+                in2: Interval(1., 12.),
+                out: Interval(1., 10.1),
             },
         ];
 
