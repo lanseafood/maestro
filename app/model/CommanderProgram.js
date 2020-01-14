@@ -231,7 +231,7 @@ module.exports = class CommanderProgram extends Program {
 		}
 
 		if (this.sodfHtml) {
-			this.renderBasicFormat(procedure, SodfHtmlProcedureWriter, 'SODF HTML', 'sodf.html');
+			this.renderBasicFormat(procedure, SodfHtmlProcedureWriter, 'SODF HTML', 'sodf.xml');
 		}
 
 		if (this.html) {

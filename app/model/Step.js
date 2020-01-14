@@ -54,7 +54,7 @@ module.exports = class Step {
 
 		// Check for the text
 		if (stepYaml.step) {
-			this.text = this.parseStepText(stepYaml.step);
+			this.text = this.parseBlock(stepYaml.step);
 		}
 
 		// Check for images
