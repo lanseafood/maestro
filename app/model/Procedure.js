@@ -35,6 +35,12 @@ module.exports = class Procedure {
 
 	constructor() {
 		this.name = '';
+		this.number = '';
+		this.m_number = '';
+		this.location = '';
+		this.duration = '';
+		this.crew_required = '';
+		this.referenced_procedures = '';
 		this.filename = '';
 		this.actors = [];
 
@@ -245,6 +251,14 @@ module.exports = class Procedure {
 
 		// Save the procedure Name
 		this.setName(procDef.procedure_name);
+		this.number = procDef.procedure_number;
+		this.m_number = procDef.m_number;
+		this.objective = procDef.procedure_objective;
+		this.location = procDef.location;
+		this.duration = procDef.duration;
+		this.crew_required = procDef.crew;
+		this.referenced_procedures = procDef.referenced_procedure;
+		this.filename = filenamify(this.name.replace(/\s+/g, '_'));
 
 		if (procDef.columns) {
 			this.ColumnsHandler.updateColumns(procDef.columns);

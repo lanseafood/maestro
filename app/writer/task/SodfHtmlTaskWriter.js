@@ -14,7 +14,7 @@ module.exports = class SodfHtmlTaskWriter extends TaskWriter {
 
 	constructor(task, procedureWriter) {
 		super(task, procedureWriter);
-		this.textTransform = new TextTransform('html');
+		this.textTransform = new TextTransform('ipvXml');
 		// this.taskNumbering = null;
 		// this.getNumbering();
 	}
@@ -97,12 +97,7 @@ module.exports = class SodfHtmlTaskWriter extends TaskWriter {
 	 * @return {string}                 HTML output of row
 	 */
 	createRow(actor, location, row) {
-		return nunjucks.render('sodf/actor-location-row.html', {
-			actor: actor,
-			location: location,
-			stepNumber: row.stepNumber,
-			stepsHtml: row.stepContents.join('')
-		});
+		return row.stepContents.join('');
 	}
 
 	writeSeries(series, columnKeys) {
@@ -127,7 +122,7 @@ module.exports = class SodfHtmlTaskWriter extends TaskWriter {
 
 	addImages(images) {
 
-		const imageHtmlArray = [];
+		const imageXmlArray = [];
 		const imagesPath = this.procedureWriter.program.imagesPath;
 		const buildPath = this.procedureWriter.program.outputPath;
 		for (const imageMeta of images) {
@@ -152,16 +147,17 @@ module.exports = class SodfHtmlTaskWriter extends TaskWriter {
 				});
 			}
 
-			const image = nunjucks.render('sodf/image.html', {
+			const image = nunjucks.render('sodf/image.xml', {
 				path: path.join('build', imageMeta.path),
 				width: imageSize.width,
 				height: imageSize.height
+				// todo add fields for image number, and caption
 			});
 
-			imageHtmlArray.push(image);
+			imageXmlArray.push(image);
 		}
 
-		return imageHtmlArray;
+		return imageXmlArray;
 	}
 
 	addParagraph(params = {}) {
@@ -173,7 +169,7 @@ module.exports = class SodfHtmlTaskWriter extends TaskWriter {
 
 	addBlock(blockType, blockLines) {
 
-		const blockTable = nunjucks.render('sodf/block-table.html', {
+		const blockTable = nunjucks.render('sodf/block-table.xml', {
 			blockType: blockType,
 			blockLines: blockLines.map((line) => {
 				return this.textTransform.transform(line).join('');
@@ -237,7 +233,7 @@ module.exports = class SodfHtmlTaskWriter extends TaskWriter {
 
 		// added class li-level-${options.level} really just as a way to remind that
 		// some handling of this will be necessary
-		return nunjucks.render('sodf/step-text.html', {
+		return nunjucks.render('sodf/step-text.xml', {
 			level: options.level,
 			actorText,
 			stepText: texts.join('')
@@ -253,26 +249,25 @@ module.exports = class SodfHtmlTaskWriter extends TaskWriter {
 	}
 
 	addTitleText(title, duration) {
-		const subtaskTitle = nunjucks.render('sodf/subtask-title.html', {
-			title: title.toUpperCase().trim(),
-			duration: duration.format('H:M')
+		const subtaskTitle = nunjucks.render('sodf/subtask-title.xml', {
+			title: this.textTransform.transform(title.toUpperCase().trim()).join('')
 		});
 
 		return subtaskTitle;
 	}
 
 	preInsertSteps(level) {
-		let start;
-		if (!level || level === 0) {
-			start = `start="${this.stepNumber}"`;
-		} else {
-			start = '';
-		}
-		return `<ol ${start}>`;
+		// let start;
+		// if (!level || level === 0) {
+		// 	start = `start="${this.stepNumber}"`;
+		// } else {
+		// 	start = '';
+		// }
+		// return `<ol ${start}>`;
 	}
 
 	postInsertSteps(level) { // eslint-disable-line no-unused-vars
-		return '</ol>';
+		// return '</ol>';
 	}
 
 	setModuleOutputType() {

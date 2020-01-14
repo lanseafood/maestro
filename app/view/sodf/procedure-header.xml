@@ -1,0 +1,69 @@
+<AuthoringTool>NASA/maestro</AuthoringTool>
+<MetaData procType="Nominal" status="FIN">
+    <Date>{{date}}</Date>
+    <UniqueId>{{m_number}}</UniqueId>
+    <Book>{{book}}</Book>
+    <Applicability>{{applicbility}}</Applicability>
+    <Version>{{version}}</Version>
+    <ProcCode>{{procedure_code}}</ProcCode>
+</MetaData>
+<ProcTitle>
+    <ProcNumber>{{number|default("X.X.XXX")}}</ProcNumber> <Text>{{name}}</Text>
+</ProcTitle>
+<TimeRequirement>
+    <?xm-replace_text {Time Requirement}?>
+</TimeRequirement>
+<ProcedureObjective>
+    <Para>
+        <Text>{{objective}}</Text>
+    </Para>
+</ProcedureObjective>
+<ItemizedList>
+    <ListTitle>
+        <Text>LOCATION:</Text>
+    </ListTitle>
+    <Para>
+        {{location}}
+    </Para>
+    <Para>
+        <Text>Stowed: </Text>
+        {{stowage}}
+    </Para>
+</ItemizedList>
+<ItemizedList>
+    <ListTitle>
+    <Text>DURATION:</Text>
+    </ListTitle>
+    <Para>
+        <Text>{{duration}}</Text>
+    </Para>
+</ItemizedList>
+<ItemizedList>
+    <ListTitle>
+        <Text>CREW:</Text>
+    </ListTitle>
+    <Para>
+        <Text>{{required_crew}}</Text>
+    </Para>
+    <Para>
+        <Text>One (all other steps)</Text>
+    </Para>
+</ItemizedList>
+<ToolsPartsMaterials>
+    <Parts>
+        {{parts}}
+    </Parts>
+    <Materials>
+        {{materials}}
+    </Materials>
+    <Tools>
+        {{tools}}
+    </Tools>
+</ToolsPartsMaterials>
+<ItemizedList>
+  <ListTitle>
+<Text>REFERENCED PROCEDURE(S):</Text>
+</ListTitle> <Para>
+<Text>{{refecenced_procedures}}</Text>
+</Para>
+</ItemizedList>
