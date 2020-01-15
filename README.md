@@ -22,9 +22,9 @@
 
 ## Purpose
 
-The purpose of Maestro is to replace the manual procedure creation process for Extravehicular Activities (EVAs, AKA "spacewalks") by NASA* personnel. The goal of the application is to be able to write EVA procedures as simple YAML files and run `maestro compose` to generate Word or other documents in a standardized procedure format, similar to the Space Shuttle mission "STS-134" procedures found on page `FS 7-20` of [this document](https://www.nasa.gov/centers/johnson/pdf/539922main_EVA_134_F_A.pdf). More EVAs can be found at the [FOIA archive](https://www.nasa.gov/centers/johnson/news/flightdatafiles/foia_archive.html).
+The purpose of Maestro is to replace the manual procedure creation process for Extravehicular Activities (EVAs, AKA "spacewalks") by NASA\* personnel. The goal of the application is to be able to write EVA procedures as simple YAML files and run `maestro compose` to generate Word or other documents in a standardized procedure format, similar to the Space Shuttle mission "STS-134" procedures found on page `FS 7-20` of [this document](https://www.nasa.gov/centers/johnson/pdf/539922main_EVA_134_F_A.pdf). More EVAs can be found at the [FOIA archive](https://www.nasa.gov/centers/johnson/news/flightdatafiles/foia_archive.html).
 
-<sub>_* This is an independent project and is unaffiliated with NASA_</sub>
+<sub>_\* This is an independent project and is unaffiliated with NASA_</sub>
 
 ## Usage
 
@@ -80,6 +80,12 @@ We're experimenting with Rust to build WASM modules for faster math. To output t
 
 Everything else is the same.
 
+**Rust Tips and Tricks**
+
+- General documentation on [`wasm-bindgen`](https://rustwasm.github.io/docs/wasm-bindgen/introduction.html), which is the glue between Rust and browser APIs
+- [On `console.log`ing Rust structs](https://rustwasm.github.io/wasm-bindgen/reference/attributes/on-rust-exports/inspectable.html)
+- Dealing with [JSON using Serde](https://serde.rs/json.html)
+
 ### VS Code
 
 If you use [VS Code](https://code.visualstudio.com/), we recommend installing the [eslint extension](https://github.com/microsoft/vscode-eslint) to see linting messages in your editor as you work. You'll also get automatic formatting to fix common mistakes.
@@ -112,7 +118,6 @@ The following lists include possible future issues to work, but are not currentl
 
 - [Feature requests](https://github.com/xOPERATIONS/maestro/issues?q=is%3Aclosed+is%3Aissue+label%3A%22feature+request%22)
 - [Debt cleanup](https://github.com/xOPERATIONS/maestro/issues?q=is%3Aclosed+is%3Aissue+label%3A%22debt+cleanup%22)
-
 
 ## Definitions
 

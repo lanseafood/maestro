@@ -1,6 +1,23 @@
+// const { execSync } = require('child_process');
 const path = require('path');
 const webpack = require('webpack');
 const WasmPackPlugin = require('@wasm-tool/wasm-pack-plugin');
+
+// // check if rust and wasm-pack have been installed
+// let canBuildWasm = true;
+// try {
+// 	execSync('rustc');
+// } catch {
+// 	console.warn('Cannot find rustc on your $PATH. WASM (STNs) will not be included in the build');
+// 	canBuildWasm = false;
+// }
+
+// try {
+// 	execSync('wasm-pack');
+// } catch {
+// 	console.warn('Cannot find wasm-pack on your $PATH. WASM (STNs) will not be included in the build');
+// 	canBuildWasm = false;
+// }
 
 module.exports = {
 
@@ -23,7 +40,8 @@ module.exports = {
 	plugins: [
 		// for STNs
 		new WasmPackPlugin({
-			crateDirectory: path.resolve(__dirname, '.')
+			crateDirectory: path.resolve(__dirname, '.'),
+			forceWatch: true
 		}),
 		// The following modules don't make sense in the browser context. Replace them with dummies
 		// or replacements that provide functionality in the browser.
@@ -57,7 +75,10 @@ module.exports = {
 				test: /\.m?js$/,
 				exclude: /(node_modules|bower_components)/,
 				use: {
-					loader: 'babel-loader'
+					loader: 'babel-loader',
+					options: {
+						presets: ['@babel/preset-env']
+					}
 				}
 			},
 			{

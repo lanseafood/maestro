@@ -138,6 +138,7 @@
     "nyc": "^14.1.1",
     "pre-commit": "^1.2.2",
     "puppeteer": "^2.0.0",
+    "regenerator-runtime": "^0.13.3",
     "sinon": "^7.5.0",
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.10"
