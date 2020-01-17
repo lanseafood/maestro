@@ -12,7 +12,7 @@ export const getSTNTools = () => new Promise((resolve, reject) => {
 		return;
 	}
 
-	import('../../../pkg')
+	import('../../../../pkg')
 		.then((m) => {
 			wasmModule = m;
 			resolve(m);

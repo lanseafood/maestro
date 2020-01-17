@@ -30,7 +30,7 @@ module.exports = class Server {
 				webPath: 'maestro-views',
 				localBase: __dirname,
 				localRelative: '../writer/nunjucks-templates'
-			}
+			},
 			{ webPath: '', localBase: __dirname, localRelative: '../../build' }
 		];
 
