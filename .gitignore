@@ -8,5 +8,5 @@
 test/cases/**/build
 build/*
 
-/target
+**/target
 **/*.rs.bk

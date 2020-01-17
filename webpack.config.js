@@ -23,7 +23,7 @@ module.exports = {
 	plugins: [
 		// for STNs
 		new WasmPackPlugin({
-			crateDirectory: path.resolve(__dirname, '.'),
+			crateDirectory: path.resolve(__dirname, 'app', 'web', 'crate'),
 			forceWatch: true
 		}),
 		// The following modules don't make sense in the browser context. Replace them with dummies
