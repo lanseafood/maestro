@@ -1,23 +1,6 @@
-// const { execSync } = require('child_process');
 const path = require('path');
 const webpack = require('webpack');
 const WasmPackPlugin = require('@wasm-tool/wasm-pack-plugin');
-
-// // check if rust and wasm-pack have been installed
-// let canBuildWasm = true;
-// try {
-// 	execSync('rustc');
-// } catch {
-// 	console.warn('Cannot find rustc on your $PATH. WASM (STNs) will not be included in the build');
-// 	canBuildWasm = false;
-// }
-
-// try {
-// 	execSync('wasm-pack');
-// } catch {
-// 	console.warn('Cannot find wasm-pack on your $PATH. WASM (STNs) will not be included in the build');
-// 	canBuildWasm = false;
-// }
 
 module.exports = {
 

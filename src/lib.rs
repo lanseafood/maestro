@@ -10,7 +10,7 @@ const data = {
     { id: 4, label: 'Both crew complete aft cable routing' },
     { id: 5, label: 'Both crew complete fwd cable routing' }
   ],
-  links: [
+  edges: [
     { source: 0, target: 1, value: [60, 120], actor: 'all' },  <-- "value" should probably not be a range coming out of TimeSync
     { source: 1, target: 2, value: [60, 60], actor: 'EV1' },   <-- and instead should should just represent the as-planned values
     { source: 1, target: 3, value: [45, 45], actor: 'EV2' },   <-- so this other class/function can apply uncertainty.
@@ -53,17 +53,16 @@ pub fn set_panic_hook() {
 #[derive(Debug, Default, Deserialize, Serialize)]
 pub struct GraphPayload {
   nodes: Vec<Activity>,
-  links: Vec<Link>,
+  edges: Vec<Edge>,
 }
 
 #[derive(Debug, Default, Deserialize, Serialize)]
-pub struct Link {
+pub struct Edge {
   source: i32,
   target: i32,
+  minutes: f64,
   #[serde(default)]
-  value: Interval,
-  #[serde(default)]
-  actor: String,
+  action: String,
 }
 
 #[derive(Clone, Deserialize, Serialize, Debug)]
@@ -77,8 +76,11 @@ pub struct Activity {
 #[wasm_bindgen]
 #[derive(Debug)]
 pub struct STN {
-  distance_graph: Graph<i32, f64>,
-  constraint_table: HashMap<i32, HashMap<i32, f64>>,
+  /// maps id to Node in Graph
+  node_indices: HashMap<i32, NodeIndex>,
+  distance_graph: Graph<Activity, f64>,
+  /// use ids to key the (column, row) of the constraint table
+  constraint_table: HashMap<(i32, i32), f64>,
   elapsed_time: f64,
 }
 
@@ -87,6 +89,7 @@ impl STN {
   #[wasm_bindgen(constructor)]
   pub fn new() -> STN {
     STN {
+      node_indices: HashMap::new(),
       distance_graph: Graph::new(),
       constraint_table: HashMap::new(),
       elapsed_time: 0.,
@@ -98,65 +101,118 @@ impl STN {
     format!("{} elapsed time", self.elapsed_time)
   }
 
-  /// Register task data as a distance graph. Returns the number of edges created.
+  /// Register task data as a distance graph. Returns the number of edges created. Adds 10% uncertainty to task time
   #[wasm_bindgen(catch, method, js_name = registerGraph)]
   pub fn register_graph(&mut self, payload: &JsValue) -> Result<usize, JsValue> {
     let data: GraphPayload = payload.into_serde().unwrap();
 
-    let mut activity_nodes: HashMap<i32, NodeIndex> = HashMap::new();
-
     for node in data.nodes.iter() {
-      activity_nodes.insert(node.id, self.distance_graph.add_node(node.id));
+      // manually clone the activity
+      let activity = node.clone();
+      self
+        .node_indices
+        .insert(node.id, self.distance_graph.add_node(activity));
     }
 
-    for link in data.links.iter() {
-      let source = match activity_nodes.get(&link.source) {
+    for edge in data.edges.iter() {
+      // silently skip this edge if one of the nodes can't be found
+      let source = match self.node_indices.get(&edge.source) {
         Some(s) => s,
         None => continue,
       };
-      let target = match activity_nodes.get(&link.target) {
+      let target = match self.node_indices.get(&edge.target) {
         Some(t) => t,
         None => continue,
       };
 
-      self
-        .distance_graph
-        .update_edge(*source, *target, link.value.upper());
+      // give 10% uncertainty to execution time
+      let error_estimate = edge.minutes * 0.1;
+      let interval = Interval::new(edge.minutes - error_estimate, edge.minutes + error_estimate);
 
+      // outgoing upper interval
       self
         .distance_graph
-        .update_edge(*target, *source, -link.value.lower());
+        .update_edge(*source, *target, interval.upper());
+
+      // incoming negative lower interval
+      self
+        .distance_graph
+        .update_edge(*target, *source, -interval.lower());
     }
-
-    // let res = format!("{:?}", data);
-    // console::log_1(&JsValue::from_str(&res));
 
     Ok(self.distance_graph.edge_count())
   }
 
-  // pub fn perform_APSP(&mut self) {
-  //     //
-  // }
+  /// Perform All Pairs Shortest Paths (Floyd-Warshall) algorithm to calculate inferred constraints.
+  #[wasm_bindgen(catch, method, js_name = performAPSP)]
+  pub fn perform_apsp(&mut self) -> Result<(), JsValue> {
+    let node_iter = self.node_indices.iter();
 
-  // pub fn create_activity(&mut self, name: String) {
-  //     //
-  // }
+    // init. distances from a node to a node to 0
+    for (i, _i_node) in node_iter.clone() {
+      self.constraint_table.insert((*i, *i), 0.);
+    }
 
-  // pub fn remove_activity(&mut self, name: String) {
-  //     //
-  // }
+    // add known distances to the table
+    for (i, i_node) in node_iter.clone() {
+      for (j, j_node) in node_iter.clone() {
+        // look up the edge index. silently fail if not found
+        let edge_index = match self.distance_graph.find_edge(*i_node, *j_node) {
+          Some(e) => e,
+          None => continue,
+        };
 
-  // pub fn add_constraint(&mut self, from: String, to: String, interval: (f64, f64)) -> bool {
-  //     // TODO: error handling between rust and JS?
-  // }
+        let distance = match self.distance_graph.edge_weight(edge_index) {
+          Some(d) => d,
+          None => continue,
+        };
 
-  // pub fn query(&mut self, from: Activity, to: Activity) -> Interval {
-  //     //
-  // }
+        self.constraint_table.insert((*i, *j), *distance);
+      }
+    }
 
-  // pub fn commit(&mut self, activity: Activity, time: f64) {
-  //     //
-  // }
+    // iterate over intermediates
+    for (_k, k_node) in node_iter.clone() {
+      for (i, i_node) in node_iter.clone() {
+        for (j, j_node) in node_iter.clone() {
+          let from = match self.distance_graph.find_edge(*i_node, *k_node) {
+            Some(e) => e,
+            // if no edge exists, move on
+            None => continue,
+          };
+          let to = match self.distance_graph.find_edge(*k_node, *j_node) {
+            Some(e) => e,
+            // if no edge exists, move on
+            None => continue,
+          };
+
+          let distance_from = match self.distance_graph.edge_weight(from) {
+            Some(d) => d,
+            // if no distance exists, move one
+            None => continue,
+          };
+
+          let distance_to = match self.distance_graph.edge_weight(to) {
+            Some(d) => d,
+            // if no distance exists, move one
+            None => continue,
+          };
+
+          let current_distance = match self.constraint_table.get(&(*i, *j)) {
+            Some(d) => d,
+            None => &std::f64::MAX,
+          };
+
+          let new_distance = distance_from + distance_to;
+
+          self
+            .constraint_table
+            .insert((*i, *j), new_distance.min(*current_distance));
+        }
+      }
+    }
+    Ok(())
+  }
 }
 
 #[wasm_bindgen]

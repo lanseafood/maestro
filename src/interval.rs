@@ -10,6 +10,7 @@ pub struct Interval(f64, f64);
 
 #[wasm_bindgen]
 impl Interval {
+    /// Create a new Interval
     #[wasm_bindgen(constructor)]
     pub fn new(lower: f64, upper: f64) -> Interval {
         Interval(lower, upper)

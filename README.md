@@ -85,6 +85,7 @@ Everything else is the same.
 - General documentation on [`wasm-bindgen`](https://rustwasm.github.io/docs/wasm-bindgen/introduction.html), which is the glue between Rust and browser APIs
 - [On `console.log`ing Rust structs](https://rustwasm.github.io/wasm-bindgen/reference/attributes/on-rust-exports/inspectable.html)
 - Dealing with [JSON using Serde](https://serde.rs/json.html)
+- [Documenting your code](https://doc.rust-lang.org/book/ch14-02-publishing-to-crates-io.html#making-useful-documentation-comments) - when done right, annotations from Rust are visible in JS!
 
 ### VS Code
 

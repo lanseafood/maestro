@@ -1,4 +1,5 @@
 /** import async WASM code */
+// TODO: type annotate this
 let wasmModule;
 
 /**
