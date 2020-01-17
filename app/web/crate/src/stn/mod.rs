@@ -4,6 +4,7 @@ use std::collections::HashMap;
 use std::default::Default;
 use std::string::String;
 use wasm_bindgen::prelude::*;
+use wasm_bindgen::JsValue;
 
 mod interval;
 pub use interval::Interval;
