@@ -9,6 +9,7 @@
     "lint": "eslint . --color",
     "lint:fix": "eslint . --color --fix",
     "test": "env BABEL_ENV=test mocha",
+    "test:cargo": "pushd app/web/crate && cargo test && wasm-pack test --node && popd",
     "test:colors": "env BABEL_ENV=test npm run test -- --colors",
     "test:coverage": "env BABEL_ENV=test nyc --all --reporter=text --reporter=lcov npm run test",
     "test:watch": "env BABEL_ENV=test npm run test -- --watch",

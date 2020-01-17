@@ -77,11 +77,21 @@ impl STN {
       // silently skip this edge if one of the nodes can't be found
       let source = match self.node_indices.get(&edge.source) {
         Some(s) => s,
-        None => continue,
+        None => {
+          return Err(JsValue::from_str(&format!(
+            "Could not find source node {}",
+            edge.source
+          )))
+        }
       };
       let target = match self.node_indices.get(&edge.target) {
         Some(t) => t,
-        None => continue,
+        None => {
+          return Err(JsValue::from_str(&format!(
+            "Could not find target node {}",
+            edge.target
+          )))
+        }
       };
 
       // give 10% uncertainty to execution time
@@ -115,15 +125,25 @@ impl STN {
     // add known distances to the table
     for (i, i_node) in node_iter.clone() {
       for (j, j_node) in node_iter.clone() {
-        // look up the edge index. silently fail if not found
+        // look up the edge index
         let edge_index = match self.distance_graph.find_edge(*i_node, *j_node) {
           Some(e) => e,
-          None => continue,
+          None => {
+            return Err(JsValue::from_str(&format!(
+              "Could not find edge [{}, {}]",
+              i, j,
+            )))
+          }
         };
 
         let distance = match self.distance_graph.edge_weight(edge_index) {
           Some(d) => d,
-          None => continue,
+          None => {
+            return Err(JsValue::from_str(&format!(
+              "Could not find edge weight [{}, {}]",
+              i, j,
+            )))
+          }
         };
 
         self.constraint_table.insert((*i, *j), *distance);
@@ -150,26 +170,64 @@ impl STN {
             // if no distance exists, move one
             None => continue,
           };
-
           let distance_to = match self.distance_graph.edge_weight(to) {
             Some(d) => d,
             // if no distance exists, move one
             None => continue,
           };
 
-          let current_distance = match self.constraint_table.get(&(*i, *j)) {
-            Some(d) => d,
-            None => &std::f64::MAX,
+          let current_distance = {
+            match self.constraint_table.get(&(*i, *j)) {
+              Some(d) => d,
+              None => &std::f64::MAX,
+            }
           };
 
-          let new_distance = distance_from + distance_to;
+          let new_distance = current_distance.min(distance_from + distance_to);
 
-          self
-            .constraint_table
-            .insert((*i, *j), new_distance.min(*current_distance));
+          if i == j && new_distance < 0. {
+            let error_message = format!("negative cycle found on node ID {}", i);
+            return Err(JsValue::from_str(&error_message));
+          }
+
+          if new_distance < *current_distance {
+            self.constraint_table.insert((*i, *j), new_distance);
+          }
         }
       }
     }
     Ok(())
+  }
+}
+
+#[cfg(test)]
+mod tests {
+  extern crate wasm_bindgen_test;
+  use super::*;
+  use serde_json::json;
+  use wasm_bindgen_test::*;
+
+  #[wasm_bindgen_test]
+  fn test_register_graph_no_input() {
+    let input = json!(
+      {
+        "nodes": [],
+        "edges": [],
+      }
+    );
+
+    let mut stn = STN::new();
+
+    let payload = {
+      match JsValue::from_serde(&input) {
+        Ok(p) => p,
+        Err(e) => panic!("could not create payload | {:?}", e),
+      }
+    };
+
+    match stn.register_graph(&payload) {
+      Ok(u) => assert_eq!(0_usize, u, "No edges expected to be made"),
+      Err(e) => panic!("failed running stn.register_graph | {:?}", e),
+    }
   }
 }
