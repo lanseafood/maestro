@@ -85,7 +85,7 @@ const transforms = [
 	{
 		text: '&',
 		html: '&amp;',
-		ipvXml: '&am;',
+		ipvXml: '&amp;',
 		docx: '&',
 		react: null // see ReactTextTransform
 	},
