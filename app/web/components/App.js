@@ -181,11 +181,11 @@ class App extends React.Component {
 							procedure={this.state.procedure}
 							setProcedure={this.setProcedure} />
 					) : (
-							<ProcedureViewerComponent
-								procedure={this.state.procedure}
-								getProcedureWriter={this.getProcedureWriter}
-							/>
-						)}
+						<ProcedureViewerComponent
+							procedure={this.state.procedure}
+							getProcedureWriter={this.getProcedureWriter}
+						/>
+					)}
 				</div>
 			</div>
 		);
