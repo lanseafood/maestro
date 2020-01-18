@@ -36,13 +36,6 @@ module.exports = class IpvXmlTaskWriter extends TaskWriter {
 			return preRows[index].actor !== actor || preRows[index].location !== location;
 		};
 
-		/*
-			division.subscenes = {
-				IV: [step1, step2, step3],
-				EV1: [step0, step1, step2...]
-			}
-		*/
-
 		if (Object.keys(division.subscenes).length > 1) {
 			// throw new Error('Sodf does not currently support multiple actors in a division');
 		}
@@ -116,12 +109,7 @@ module.exports = class IpvXmlTaskWriter extends TaskWriter {
 		return steps;
 	}
 
-	/**
-	 * BELOW IS STUFF TAKEN FROM HtmlTaskWriter
-	 */
-
 	addImages(images) {
-
 		const imageXmlArray = [];
 		const imagesPath = this.procedureWriter.program.imagesPath;
 		const buildPath = this.procedureWriter.program.outputPath;
@@ -225,14 +213,6 @@ module.exports = class IpvXmlTaskWriter extends TaskWriter {
 			throw new Error('addStepText() stepText must be string or array');
 		}
 
-		// FIXMEFIXMEFIXME
-		// console.log('\n\n');
-		// console.log(texts);
-		// const transformed = texts.join('');
-		// console.log(transformed);
-
-		// added class li-level-${options.level} really just as a way to remind that
-		// some handling of this will be necessary
 		return nunjucks.render('ipv-xml/step-text.xml', {
 			level: options.level,
 			actorText,

@@ -4,6 +4,7 @@
 'use strict';
 
 const assert = require('chai').assert;
+console.log(assert);
 
 const TemplateTransform = require('./TemplateTransform');
 const TextTransform = require('./TextTransform');
@@ -19,9 +20,12 @@ describe('TemplateTransform', function() {
 		// FIXME set these up for testing purposes. They'll have to live somewhere in the Maestro
 		// codebase, probably within TextTransform.js
 		const testTemplateName = 'VERIFY';
+		console.log(testTemplateName);
 		const testReplacerFn = function(argsArray) {
 			return `<strong>VERIFY:</strong> ${argsArray[0]}`;
 		};
+
+		console.log(testReplacerFn);
 
 		const testCases = [
 			{
@@ -43,6 +47,7 @@ describe('TemplateTransform', function() {
 		];
 
 		const templateTransform = new TemplateTransform(new TextTransform('html'));
+		console.log(templateTransform);
 
 		for (const testCase of testCases) {
 			console.log(testCase);
