@@ -27,7 +27,6 @@ pub struct RegistrationOptions {
 #[wasm_bindgen]
 #[derive(Debug, Default, Deserialize, Serialize)]
 pub struct RegistrationPayload {
-  nodes: Vec<Activity>,
   edges: Vec<Edge>,
 }
 
@@ -38,16 +37,6 @@ pub struct Edge {
   #[serde(default)]
   interval: Interval,
   minutes: f64,
-  #[serde(default)]
-  action: String,
-}
-
-#[derive(Clone, Deserialize, Serialize, Debug)]
-pub struct Activity {
-  pub id: i32,
-  pub label: String,
-  #[serde(default)]
-  pub bounds: Interval,
 }
 
 #[wasm_bindgen]
@@ -55,28 +44,33 @@ pub struct Activity {
 pub struct STN {
   /// maps id to Node in Graph
   node_indices: HashMap<i32, NodeIndex>,
-  distance_graph: Graph<Activity, f64>,
+  distance_graph: Graph<i32, f64>,
   /// use ids to key the (column, row) of the constraint table
   constraint_table: HashMap<(i32, i32), f64>,
   elapsed_time: f64,
 }
 
+/// Build the distance graph. Returns (#nodes, #edges) tuple
 fn build_distance_graph(
   stn: &mut STN,
   data: &RegistrationPayload,
   options: &RegistrationOptions,
 ) -> Result<(usize, usize), String> {
-  // TODO: we probably don't need nodes
-  for node in data.nodes.iter() {
-    // manually clone the activity
-    let activity = node.clone();
-    stn
-      .node_indices
-      .insert(node.id, stn.distance_graph.add_node(activity));
+  let mut nodes: Vec<i32> = data
+    .edges
+    .iter()
+    .flat_map(|e| vec![e.source, e.target])
+    .collect();
+  nodes.sort_unstable();
+  nodes.dedup();
+
+  for node in nodes.iter() {
+    let node_index = stn.distance_graph.add_node(*node);
+    stn.node_indices.insert(*node, node_index);
   }
 
   for edge in data.edges.iter() {
-    // silently skip this edge if one of the nodes can't be found
+    // panic if one of the nodes can't be found
     let source = match stn.node_indices.get(&edge.source) {
       Some(s) => s,
       None => return Err(format!("Could not find source node {}", edge.source)),
@@ -88,6 +82,7 @@ fn build_distance_graph(
 
     let mut lower = edge.interval.lower();
     let mut upper = edge.interval.upper();
+
     if options.implicit_intervals {
       // apply the uncertainty
       let error_estimate = edge.minutes * options.execution_uncertainty;
@@ -108,6 +103,7 @@ fn build_distance_graph(
   ))
 }
 
+/// (node count, edge count) tuple struct
 #[wasm_bindgen]
 pub struct RegistrationEnum(usize, usize);
 
@@ -241,10 +237,7 @@ mod tests {
 
   #[test]
   fn test_build_distance_graph() -> Result<(), String> {
-    let payload = RegistrationPayload {
-      nodes: vec![],
-      edges: vec![],
-    };
+    let payload = RegistrationPayload { edges: vec![] };
     let options = RegistrationOptions {
       implicit_intervals: true,
       execution_uncertainty: 0.,
@@ -265,58 +258,40 @@ mod tests {
   #[test]
   fn test_build_distance_graph_walkthrough_graph() -> Result<(), String> {
     // define the graph from the walkthrough
-    let nodes = vec!["X_0", "Ls", "Le", "Ss", "Se"]
-      .iter()
-      .enumerate()
-      .map(|(i, label)| Activity {
-        id: (i + 1_usize) as i32,
-        label: String::from(*label),
-        bounds: Interval::default(),
-      })
-      .collect();
-
     let edges = vec![
       Edge {
         source: 1,
         target: 2,
         interval: Interval::new(10., 20.),
         minutes: 0.,
-        action: String::from(""),
       },
       Edge {
         source: 2,
         target: 3,
         interval: Interval::new(30., 40.),
         minutes: 0.,
-        action: String::from(""),
       },
       Edge {
         source: 4,
         target: 3,
         interval: Interval::new(10., 20.),
         minutes: 0.,
-        action: String::from(""),
       },
       Edge {
         source: 4,
         target: 5,
         interval: Interval::new(40., 50.),
         minutes: 0.,
-        action: String::from(""),
       },
       Edge {
         source: 1,
         target: 5,
         interval: Interval::new(60., 70.),
         minutes: 0.,
-        action: String::from(""),
       },
     ];
 
-    let data = RegistrationPayload {
-      nodes: nodes,
-      edges: edges,
-    };
+    let data = RegistrationPayload { edges: edges };
 
     let options = RegistrationOptions {
       implicit_intervals: false,
