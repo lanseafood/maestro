@@ -214,4 +214,45 @@ describe('Step constructor - Positive Testing', function() {
 
 		});
 	});
+
+	describe('getTextFromDefinition()', function() {
+		const step = new Step({ warning: 'dummy step' }, 'EV1', taskRoles);
+		const goodTestCases = [
+			{
+				input: { step: 'using step key' },
+				expected: ['using step key']
+			},
+			{
+				input: { text: 'using text key' },
+				expected: ['using text key']
+			},
+			{
+				input: { neither: 'no .text or .step' },
+				expected: []
+			}
+		];
+
+		const erroringTestCases = [
+			{ step: 'has .step ...', text: '... and .text' }
+		];
+
+		for (const testCase of goodTestCases) {
+			it(`should return ${JSON.stringify(testCase.expected)} for input ${JSON.stringify(testCase.input)}`, function() {
+				assert.deepStrictEqual(
+					step.getTextFromDefinition(testCase.input),
+					testCase.expected
+				);
+			});
+		}
+
+		for (const testCase of erroringTestCases) {
+			it(`should throw error for ${JSON.stringify(testCase)}`, function() {
+				assert.throws(function() {
+					step.getTextFromDefinition(testCase.input);
+				});
+			});
+
+		}
+	});
+
 });

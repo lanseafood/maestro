@@ -1,0 +1,58 @@
+{
+  "nodes": [
+    {
+      "id": 0,
+      "label": "Start of EGRESS/SETUP for EV1"
+    },
+    {
+      "id": 1,
+      "label": "Start of EGRESS/SETUP for EV3"
+    },
+    {
+      "id": 2,
+      "label": "End of procedure for EV1"
+    },
+    {
+      "id": 3,
+      "label": "End of procedure for EV3"
+    }
+  ],
+  "edges": [
+    {
+        "source": 0,
+        "target": 2,
+        "minutes": 25,
+        "action": "EV1 performing EGRESS/SETUP"
+    },
+    {
+        "source": 0,
+        "target": 0,
+        "minutes": 0,
+        "action": "EV1 --> EV1 sync offset for EGRESS/SETUP"
+    },
+    {
+        "source": 1,
+        "target": 3,
+        "minutes": 25,
+        "action": "EV3 performing EGRESS/SETUP"
+    },
+    {
+        "source": 1,
+        "target": 0,
+        "minutes": 0,
+        "action": "EV3 --> EV1 sync offset for EGRESS/SETUP"
+    },
+    {
+        "source": 2,
+        "target": 2,
+        "minutes": 0,
+        "action": "EV1 --> EV1 sync offset for procedure end"
+    },
+    {
+        "source": 3,
+        "target": 2,
+        "minutes": 0,
+        "action": "EV3 --> EV1 sync offset for procedure end"
+    }
+  ]
+}
