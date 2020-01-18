@@ -56,6 +56,7 @@ fn build_distance_graph(
   data: &RegistrationPayload,
   options: &RegistrationOptions,
 ) -> Result<(usize, usize), String> {
+  // create nodes first from the edges
   let mut nodes: Vec<i32> = data
     .edges
     .iter()
@@ -69,6 +70,7 @@ fn build_distance_graph(
     stn.node_indices.insert(*node, node_index);
   }
 
+  // now set the edges with weights
   for edge in data.edges.iter() {
     // panic if one of the nodes can't be found
     let source = match stn.node_indices.get(&edge.source) {
@@ -404,8 +406,155 @@ mod tests {
 
     Ok(())
   }
+  #[test]
+  fn test_build_distance_graph_implicit_intervals() -> Result<(), String> {
+    // define the graph from the walkthrough
+    let edges = vec![
+      Edge {
+        source: 1,
+        target: 2,
+        interval: Interval::default(),
+        minutes: 10.,
+      },
+      Edge {
+        source: 2,
+        target: 3,
+        interval: Interval::default(),
+        minutes: 20.,
+      },
+      Edge {
+        source: 4,
+        target: 3,
+        interval: Interval::default(),
+        minutes: 30.,
+      },
+      Edge {
+        source: 4,
+        target: 5,
+        interval: Interval::default(),
+        minutes: 40.,
+      },
+      Edge {
+        source: 1,
+        target: 5,
+        interval: Interval::default(),
+        minutes: 50.,
+      },
+    ];
 
-  // TODO: test minute-style intervals
+    let data = RegistrationPayload { edges: edges };
+
+    let options = RegistrationOptions {
+      implicit_intervals: true,
+      execution_uncertainty: 0.1,
+    };
+
+    let mut stn = STN::new();
+    let (nodes_created, edges_created) = build_distance_graph(&mut stn, &data, &options)?;
+
+    // just check that the graph was built
+    assert_eq!(5_usize, nodes_created, "correct number of nodes created");
+    assert_eq!(10_usize, edges_created, "correct number of edges created");
+
+    // now make sure edge weights are correct
+    struct Case {
+      from: i32,
+      to: i32,
+      interval: Interval,
+    }
+
+    let cases = vec![
+      Case {
+        from: 1,
+        to: 2,
+        interval: Interval::new(9., 11.),
+      },
+      Case {
+        from: 2,
+        to: 3,
+        interval: Interval::new(18., 22.),
+      },
+      Case {
+        from: 4,
+        to: 3,
+        interval: Interval::new(27., 33.),
+      },
+      Case {
+        from: 4,
+        to: 5,
+        interval: Interval::new(36., 44.),
+      },
+      Case {
+        from: 1,
+        to: 5,
+        interval: Interval::new(45., 55.),
+      },
+    ];
+
+    for c in cases.iter() {
+      let from = {
+        match stn.node_indices.get(&c.from) {
+          Some(n) => n,
+          None => panic!("could not find node index {}", c.from),
+        }
+      };
+      let to = {
+        match stn.node_indices.get(&c.to) {
+          Some(n) => n,
+          None => panic!("could not find index {}", c.to),
+        }
+      };
+      let edge_to = {
+        match stn.distance_graph.find_edge(*from, *to) {
+          Some(edge) => edge,
+          None => panic!("could not find edge indices ({} - {})", c.from, c.to),
+        }
+      };
+      let weight_to = {
+        match stn.distance_graph.edge_weight(edge_to) {
+          Some(w) => w,
+          None => panic!(
+            "could not find weight between indices ({} - {})",
+            c.from, c.to
+          ),
+        }
+      };
+      assert_eq!(
+        c.interval.upper(),
+        *weight_to,
+        "({} - {}) = {}",
+        c.from,
+        c.to,
+        c.interval.upper()
+      );
+
+      let edge_from = {
+        match stn.distance_graph.find_edge(*to, *from) {
+          Some(edge) => edge,
+          None => panic!("could not find edge indices ({} - {})", c.from, c.to),
+        }
+      };
+      let weight_from = {
+        match stn.distance_graph.edge_weight(edge_from) {
+          Some(w) => w,
+          None => panic!(
+            "could not find weight between indices ({} - {})",
+            c.from, c.to
+          ),
+        }
+      };
+      assert_eq!(
+        -c.interval.lower(),
+        *weight_from,
+        "({} - {}) = {}",
+        c.to,
+        c.from,
+        -c.interval.lower()
+      );
+    }
+
+    Ok(())
+  }
 
   #[wasm_bindgen_test]
   fn test_register_graph_converts_json_no_nodes() {
