@@ -9,7 +9,7 @@ const Program = require('./Program');
 const Procedure = require('./Procedure');
 const EvaDocxProcedureWriter = require('../writer/procedure/EvaDocxProcedureWriter');
 const SodfDocxProcedureWriter = require('../writer/procedure/SodfDocxProcedureWriter');
-const SodfHtmlProcedureWriter = require('../writer/procedure/SodfHtmlProcedureWriter');
+const IpvXmlProcedureWriter = require('../writer/procedure/IpvXmlProcedureWriter');
 const EvaHtmlProcedureWriter = require('../writer/procedure/EvaHtmlProcedureWriter');
 
 const Server = require('../web/Server');
@@ -81,7 +81,7 @@ module.exports = class CommanderProgram extends Program {
 			{ option: 'eva-docx', desc: 'Generate EVA .docx file', prop: 'evaDocx' },
 			{ option: 'html', desc: 'Generate HTML file', prop: 'html' },
 			{ option: 'sodf-docx', desc: 'Generate SODF-like .docx file', prop: 'sodfDocx' },
-			{ option: 'sodf-html', desc: 'Generate SODF-like HTML output', prop: 'sodfHtml' }
+			{ option: 'ipv-xml', desc: 'Generate IPV compatible XML output', prop: 'ipvXml' }
 		];
 
 	}
@@ -231,7 +231,7 @@ module.exports = class CommanderProgram extends Program {
 		}
 
 		if (this.sodfHtml) {
-			this.renderBasicFormat(procedure, SodfHtmlProcedureWriter, 'SODF HTML', 'sodf.xml');
+			this.renderBasicFormat(procedure, IpvXmlProcedureWriter, 'IPV XML', 'ipv.xml');
 		}
 
 		if (this.html) {

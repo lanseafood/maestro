@@ -8,9 +8,9 @@ const nunjucks = require('../../model/nunjucksEnvironment');
 const consoleHelper = require('../../helpers/consoleHelper');
 const envHelper = require('../../helpers/envHelper');
 const TaskWriter = require('./TaskWriter');
-const TextTransform = require('../TextTransform');
+const TextTransform = require('../text-transform/TextTransform');
 
-module.exports = class SodfHtmlTaskWriter extends TaskWriter {
+module.exports = class IpvXmlTaskWriter extends TaskWriter {
 
 	constructor(task, procedureWriter) {
 		super(task, procedureWriter);
@@ -147,7 +147,7 @@ module.exports = class SodfHtmlTaskWriter extends TaskWriter {
 				});
 			}
 
-			const image = nunjucks.render('sodf/image.xml', {
+			const image = nunjucks.render('ipv-xml/image.xml', {
 				path: path.join('build', imageMeta.path),
 				width: imageSize.width,
 				height: imageSize.height
@@ -169,7 +169,7 @@ module.exports = class SodfHtmlTaskWriter extends TaskWriter {
 
 	addBlock(blockType, blockLines) {
 
-		const blockTable = nunjucks.render('sodf/block-table.xml', {
+		const blockTable = nunjucks.render('ipv-xml/block-table.xml', {
 			blockType: blockType,
 			blockLines: blockLines.map((line) => {
 				return this.textTransform.transform(line).join('');
@@ -233,7 +233,7 @@ module.exports = class SodfHtmlTaskWriter extends TaskWriter {
 
 		// added class li-level-${options.level} really just as a way to remind that
 		// some handling of this will be necessary
-		return nunjucks.render('sodf/step-text.xml', {
+		return nunjucks.render('ipv-xml/step-text.xml', {
 			level: options.level,
 			actorText,
 			stepText: texts.join('')
@@ -241,27 +241,27 @@ module.exports = class SodfHtmlTaskWriter extends TaskWriter {
 	}
 
 	addCheckStepText(stepText, level, parent) {
-		return nunjucks.render('sodf/checkbox-step-text.html', {
+		return nunjucks.render('ipv-xml/checkbox-step-text.html', {
 			parent,
 			stepText: this.textTransform.transform(stepText).join(''),
 			level
 		});
 	}
 
-	addTitleText(title, duration) {
-		const subtaskTitle = nunjucks.render('sodf/subtask-title.xml', {
+	addTitleText(title) {
+		const subtaskTitle = nunjucks.render('ipv-xml/subtask-title.xml', {
 			title: this.textTransform.transform(title.toUpperCase().trim()).join('')
 		});
 
 		return subtaskTitle;
 	}
 
-	preInsertSteps(level) {
+	preInsertSteps() {
 		// let start;
 		// if (!level || level === 0) {
-		// 	start = `start="${this.stepNumber}"`;
+		// start = `start="${this.stepNumber}"`;
 		// } else {
-		// 	start = '';
+		// start = '';
 		// }
 		// return `<ol ${start}>`;
 	}

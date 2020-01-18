@@ -1,7 +1,7 @@
 <AuthoringTool>NASA/maestro</AuthoringTool>
 <MetaData procType="Nominal" status="FIN">
     <Date>{{date}}</Date>
-    <UniqueId>{{m_number}}</UniqueId>
+    <UniqueId>{{uniqueId}}</UniqueId>
     <Book>{{book}}</Book>
     <Applicability>{{applicbility}}</Applicability>
     <Version>{{version}}</Version>
@@ -43,7 +43,7 @@
         <Text>CREW:</Text>
     </ListTitle>
     <Para>
-        <Text>{{required_crew}}</Text>
+        <Text>{{crewRequired}}</Text>
     </Para>
     <Para>
         <Text>One (all other steps)</Text>
@@ -64,6 +64,6 @@
   <ListTitle>
 <Text>REFERENCED PROCEDURE(S):</Text>
 </ListTitle> <Para>
-<Text>{{refecenced_procedures}}</Text>
+<Text>{{referencedProcedures}}</Text>
 </Para>
 </ItemizedList>

@@ -36,11 +36,11 @@ module.exports = class Procedure {
 	constructor() {
 		this.name = '';
 		this.number = '';
-		this.m_number = '';
+		this.uniqueId = '';
 		this.location = '';
 		this.duration = '';
-		this.crew_required = '';
-		this.referenced_procedures = '';
+		this.crewRequired = '';
+		this.referencedProcedures = '';
 		this.filename = '';
 		this.actors = [];
 
@@ -252,13 +252,12 @@ module.exports = class Procedure {
 		// Save the procedure Name
 		this.setName(procDef.procedure_name);
 		this.number = procDef.procedure_number;
-		this.m_number = procDef.m_number;
+		this.uniqueId = procDef.uniqueId;
 		this.objective = procDef.procedure_objective;
 		this.location = procDef.location;
 		this.duration = procDef.duration;
-		this.crew_required = procDef.crew;
-		this.referenced_procedures = procDef.referenced_procedure;
-		this.filename = filenamify(this.name.replace(/\s+/g, '_'));
+		this.crewRequired = procDef.crew;
+		this.referencedProcedures = procDef.referenced_procedure;
 
 		if (procDef.columns) {
 			this.ColumnsHandler.updateColumns(procDef.columns);
@@ -287,7 +286,11 @@ module.exports = class Procedure {
 			taskDefinitions[task.file] = YAML.safeLoad(fs.readFileSync(taskFileName, 'utf8'));
 		}
 
-		this.updateTaskDefinitions(taskDefinitions);
+		const err = this.updateTaskDefinitions(taskDefinitions);
+
+		if (err) {
+			throw err;
+		}
 	}
 
 	/**
