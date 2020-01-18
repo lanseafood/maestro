@@ -287,10 +287,10 @@ module.exports = class Procedure {
 		}
 
 		const err = this.updateTaskDefinitions(taskDefinitions);
-
 		if (err) {
 			throw err;
 		}
+
 	}
 
 	/**

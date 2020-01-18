@@ -57,9 +57,9 @@ module.exports = class Step {
 
 		// Currently YAML "step" prop maps to model "text" prop. See comment in constructor.
 		if (this.text.length > 1) {
-			def.step = this.text.slice(); // copy the array
+			def.text = this.text.slice(); // copy the array
 		} else if (this.text.length === 1) {
-			def.step = this.text[0];
+			def.text = this.text[0];
 		}
 
 		if (this.images.length) {
@@ -91,6 +91,20 @@ module.exports = class Step {
 		return def;
 	}
 
+	getTextFromDefinition(stepYaml) {
+		if (stepYaml.step || stepYaml.text) {
+			if (stepYaml.step && stepYaml.text) {
+				throw new Error(
+					'The "step" property is deprecated, and "text" is preferred, but both cannot be set'
+				);
+			}
+			const content = stepYaml.text ? stepYaml.text : stepYaml.step;
+			const preStep = arrayHelper.parseArray(content);
+			return preStep.map((text) => this.parseStepText(text));
+		}
+		return [];
+	}
+
 	populateFromYaml(stepYaml) {
 
 		this.raw = stepYaml;
@@ -113,10 +127,7 @@ module.exports = class Step {
 		}
 
 		// Check for the text
-		if (stepYaml.step) {
-			const preStep = arrayHelper.parseArray(stepYaml.step);
-			this.text = preStep.map((text) => this.parseStepText(text));
-		}
+		this.text = this.getTextFromDefinition(stepYaml);
 
 		// Check for images
 		if (stepYaml.images) {

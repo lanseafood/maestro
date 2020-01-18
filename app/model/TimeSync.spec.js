@@ -3,6 +3,7 @@
 
 'use strict';
 
+const fs = require('fs');
 const path = require('path');
 const assert = require('chai').assert;
 
@@ -58,81 +59,107 @@ Double 5
 `;
 
 describe('TimeSync', function() {
-	const baseProcedure = new Procedure();
-	const procedureFilePath = path.join(
-		__dirname,
-		'../../test/cases/complex-times/procedures/proc.yml'
-	);
 
-	const err = baseProcedure.addProcedureDefinitionFromFile(procedureFilePath);
-	if (err) {
-		throw new Error(err);
+	function doSetup(testCase) {
+		const procedure = new Procedure();
+		const testCasePath = path.join(__dirname, '../../test/cases/', testCase);
+		const procedureFilePath = path.join(testCasePath, 'procedures/proc.yml');
+		const stnGraphPath = path.join(testCasePath, 'build/stnGraph.json');
+
+		const err = procedure.addProcedureDefinitionFromFile(procedureFilePath);
+		if (err) {
+			throw new Error(err);
+		}
+
+		const timeSync = new TimeSync(procedure.tasks);
+		timeSync.sync();
+		const timeSyncToString = timeSync.toString();
+
+		return {
+			procedure, procedureFilePath, timeSync, timeSyncToString, stnGraphPath
+		};
+
 	}
-
-	const baseTimeSync = new TimeSync(baseProcedure.tasks);
-	baseTimeSync.sync();
-	const baseToString = baseTimeSync.toString();
-
 	describe('updateStartTimes()', function() {
-		for (let t = 0; t < baseProcedure.tasks.length; t++) {
-			const testProcedure = new Procedure();
-			const err = testProcedure.addProcedureDefinitionFromFile(procedureFilePath);
-			if (err) {
-				throw new Error(err);
-			}
-			// todo setup a mock for console.log so `beVerbose` can be set to true
-			const testTimeSync = new TimeSync(
-				testProcedure.tasks,
-				false,
-				false // <-- don't do initial updateStartTimes
-			);
+		const { procedure, procedureFilePath, timeSyncToString } = doSetup('complex-times');
 
-			// Start updateStartTimes() at task[t] to verify is independent of initial task
-			testTimeSync.updateStartTimes(testProcedure.tasks[t]);
-
-			testTimeSync.sync();
-			const testToString = testTimeSync.toString();
+		for (let t = 0; t < procedure.tasks.length; t++) {
 			it(`should have the same output when sync() started at task #${t}`, function() {
-				assert.equal(testToString, baseToString);
+				const testProcedure = new Procedure();
+				const err = testProcedure.addProcedureDefinitionFromFile(procedureFilePath);
+				if (err) {
+					throw new Error(err);
+				}
+				// todo setup a mock for console.log so `beVerbose` can be set to true
+				const testTimeSync = new TimeSync(
+					testProcedure.tasks,
+					false,
+					false // <-- don't do initial updateStartTimes
+				);
+
+				// Start updateStartTimes() at task[t] to verify is independent of initial task
+				testTimeSync.updateStartTimes(testProcedure.tasks[t]);
+
+				testTimeSync.sync();
+				const testToString = testTimeSync.toString();
+				assert.equal(testToString, timeSyncToString);
 			});
 		}
 	});
 
 	describe('sync()', function() {
-		for (let t = 0; t < baseProcedure.tasks.length; t++) {
-			const testProcedure = new Procedure();
-			const err = testProcedure.addProcedureDefinitionFromFile(procedureFilePath);
-			if (err) {
-				throw new Error(err);
-			}
-			const testTimeSync = new TimeSync(testProcedure.tasks);
+		const { procedure, procedureFilePath, timeSyncToString } = doSetup('complex-times');
 
-			// Start sync() at task[t] to verify is independent of initial task
-			testTimeSync.sync(testProcedure.tasks[t]);
-
-			const testToString = testTimeSync.toString();
+		for (let t = 0; t < procedure.tasks.length; t++) {
 			it(`should have the same output when sync() started at task #${t}`, function() {
-				assert.equal(testToString, baseToString);
+				const testProcedure = new Procedure();
+				const err = testProcedure.addProcedureDefinitionFromFile(procedureFilePath);
+				if (err) {
+					throw new Error(err);
+				}
+				const testTimeSync = new TimeSync(testProcedure.tasks);
+
+				// Start sync() at task[t] to verify is independent of initial task
+				testTimeSync.sync(testProcedure.tasks[t]);
+
+				const testToString = testTimeSync.toString();
+				assert.equal(testToString, timeSyncToString);
 			});
 		}
 	});
 
 	describe('toString()', function() {
+		const { timeSyncToString } = doSetup('complex-times');
+
 		it('should have standard output', function() {
-			assert.equal(baseToString, expectedComplexToString);
+			assert.equal(timeSyncToString, expectedComplexToString);
 		});
 	});
 
 	describe('endpoints()', function() {
+		const { procedure, timeSync } = doSetup('complex-times');
+
 		it('should correctly identify endpoints', function() {
 			const expectedEndpoints = {
-				EV1: { first: baseProcedure.tasks[0], last: baseProcedure.tasks[17] },
-				EV2: { first: baseProcedure.tasks[0], last: baseProcedure.tasks[17] },
-				EV3: { first: baseProcedure.tasks[5], last: baseProcedure.tasks[13] },
-				EV4: { first: baseProcedure.tasks[5], last: baseProcedure.tasks[8] }
+				EV1: { first: procedure.tasks[0], last: procedure.tasks[17] },
+				EV2: { first: procedure.tasks[0], last: procedure.tasks[17] },
+				EV3: { first: procedure.tasks[5], last: procedure.tasks[13] },
+				EV4: { first: procedure.tasks[5], last: procedure.tasks[8] }
 			};
-			assert.deepEqual(baseTimeSync.endpoints(), expectedEndpoints);
+			assert.deepEqual(timeSync.endpoints(), expectedEndpoints);
 		});
+	});
+
+	describe('getStnGraph()', function() {
+		const testCases = ['simple', 'complex-times'];
+		for (const testCase of testCases) {
+			it(`should create the expected graph for ${testCase} case`, function() {
+				const { timeSync, stnGraphPath } = doSetup(testCase);
+				const graph = timeSync.getStnGraph();
+				const expected = JSON.parse(fs.readFileSync(stnGraphPath).toString());
+				assert.deepStrictEqual(graph, expected);
+			});
+		}
 	});
 
 });

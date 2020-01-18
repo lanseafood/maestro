@@ -1,0 +1,494 @@
+{
+  "nodes": [
+    {
+      "id": 0,
+      "label": "Start of Double 0 for EV1"
+    },
+    {
+      "id": 1,
+      "label": "Start of Double 0 for EV2"
+    },
+    {
+      "id": 2,
+      "label": "Start of Single 0 for EV1"
+    },
+    {
+      "id": 3,
+      "label": "Start of Single 1 for EV1"
+    },
+    {
+      "id": 4,
+      "label": "Start of Single 2 for EV2"
+    },
+    {
+      "id": 5,
+      "label": "Start of Single 3 for EV2"
+    },
+    {
+      "id": 6,
+      "label": "Start of Double 1 for EV3"
+    },
+    {
+      "id": 7,
+      "label": "Start of Double 1 for EV4"
+    },
+    {
+      "id": 8,
+      "label": "Start of Double 2 for EV3"
+    },
+    {
+      "id": 9,
+      "label": "Start of Double 2 for EV1"
+    },
+    {
+      "id": 10,
+      "label": "Start of Single 4 for EV4"
+    },
+    {
+      "id": 11,
+      "label": "Start of Single 5 for EV4"
+    },
+    {
+      "id": 12,
+      "label": "Start of Triple 0 for EV3"
+    },
+    {
+      "id": 13,
+      "label": "Start of Triple 0 for EV1"
+    },
+    {
+      "id": 14,
+      "label": "Start of Triple 0 for EV2"
+    },
+    {
+      "id": 15,
+      "label": "Start of Triple 1 for EV2"
+    },
+    {
+      "id": 16,
+      "label": "Start of Triple 1 for EV3"
+    },
+    {
+      "id": 17,
+      "label": "Start of Triple 1 for EV1"
+    },
+    {
+      "id": 18,
+      "label": "Start of Double 3 for EV1"
+    },
+    {
+      "id": 19,
+      "label": "Start of Double 3 for EV3"
+    },
+    {
+      "id": 20,
+      "label": "Start of Double 4 for EV3"
+    },
+    {
+      "id": 21,
+      "label": "Start of Double 4 for EV1"
+    },
+    {
+      "id": 22,
+      "label": "Start of Single 6 for EV3"
+    },
+    {
+      "id": 23,
+      "label": "Start of Single 7 for EV1"
+    },
+    {
+      "id": 24,
+      "label": "Start of Single 8 for EV2"
+    },
+    {
+      "id": 25,
+      "label": "Start of Single 9 for EV2"
+    },
+    {
+      "id": 26,
+      "label": "Start of Double 5 for EV2"
+    },
+    {
+      "id": 27,
+      "label": "Start of Double 5 for EV1"
+    },
+    {
+      "id": 28,
+      "label": "End of procedure for EV4"
+    },
+    {
+      "id": 29,
+      "label": "End of procedure for EV3"
+    },
+    {
+      "id": 30,
+      "label": "End of procedure for EV2"
+    },
+    {
+      "id": 31,
+      "label": "End of procedure for EV1"
+    }
+  ],
+  "edges": [
+    {
+      "source": 0,
+      "target": 2,
+      "minutes": 29,
+      "action": "EV1 performing Double 0"
+    },
+    {
+      "source": 0,
+      "target": 0,
+      "minutes": 0,
+      "action": "EV1 --> EV1 sync offset for Double 0"
+    },
+    {
+      "source": 1,
+      "target": 4,
+      "minutes": 47,
+      "action": "EV2 performing Double 0"
+    },
+    {
+      "source": 1,
+      "target": 0,
+      "minutes": -17,
+      "action": "EV2 --> EV1 sync offset for Double 0"
+    },
+    {
+      "source": 2,
+      "target": 3,
+      "minutes": 1,
+      "action": "EV1 performing Single 0"
+    },
+    {
+      "source": 2,
+      "target": 2,
+      "minutes": 0,
+      "action": "EV1 --> EV1 sync offset for Single 0"
+    },
+    {
+      "source": 3,
+      "target": 9,
+      "minutes": 7,
+      "action": "EV1 performing Single 1"
+    },
+    {
+      "source": 3,
+      "target": 3,
+      "minutes": 0,
+      "action": "EV1 --> EV1 sync offset for Single 1"
+    },
+    {
+      "source": 4,
+      "target": 5,
+      "minutes": 11,
+      "action": "EV2 performing Single 2"
+    },
+    {
+      "source": 4,
+      "target": 4,
+      "minutes": 0,
+      "action": "EV2 --> EV2 sync offset for Single 2"
+    },
+    {
+      "source": 5,
+      "target": 14,
+      "minutes": 13,
+      "action": "EV2 performing Single 3"
+    },
+    {
+      "source": 5,
+      "target": 5,
+      "minutes": 0,
+      "action": "EV2 --> EV2 sync offset for Single 3"
+    },
+    {
+      "source": 6,
+      "target": 8,
+      "minutes": 29,
+      "action": "EV3 performing Double 1"
+    },
+    {
+      "source": 6,
+      "target": 6,
+      "minutes": 0,
+      "action": "EV3 --> EV3 sync offset for Double 1"
+    },
+    {
+      "source": 7,
+      "target": 10,
+      "minutes": 59,
+      "action": "EV4 performing Double 1"
+    },
+    {
+      "source": 7,
+      "target": 6,
+      "minutes": -31,
+      "action": "EV4 --> EV3 sync offset for Double 1"
+    },
+    {
+      "source": 8,
+      "target": 12,
+      "minutes": 61,
+      "action": "EV3 performing Double 2"
+    },
+    {
+      "source": 8,
+      "target": 8,
+      "minutes": 0,
+      "action": "EV3 --> EV3 sync offset for Double 2"
+    },
+    {
+      "source": 9,
+      "target": 13,
+      "minutes": 67,
+      "action": "EV1 performing Double 2"
+    },
+    {
+      "source": 9,
+      "target": 8,
+      "minutes": -3,
+      "action": "EV1 --> EV3 sync offset for Double 2"
+    },
+    {
+      "source": 10,
+      "target": 11,
+      "minutes": 23,
+      "action": "EV4 performing Single 4"
+    },
+    {
+      "source": 10,
+      "target": 10,
+      "minutes": 0,
+      "action": "EV4 --> EV4 sync offset for Single 4"
+    },
+    {
+      "source": 11,
+      "target": 28,
+      "minutes": 61,
+      "action": "EV4 performing Single 5"
+    },
+    {
+      "source": 11,
+      "target": 11,
+      "minutes": 0,
+      "action": "EV4 --> EV4 sync offset for Single 5"
+    },
+    {
+      "source": 12,
+      "target": 16,
+      "minutes": 23,
+      "action": "EV3 performing Triple 0"
+    },
+    {
+      "source": 12,
+      "target": 12,
+      "minutes": 0,
+      "action": "EV3 --> EV3 sync offset for Triple 0"
+    },
+    {
+      "source": 13,
+      "target": 17,
+      "minutes": 53,
+      "action": "EV1 performing Triple 0"
+    },
+    {
+      "source": 13,
+      "target": 12,
+      "minutes": -4,
+      "action": "EV1 --> EV3 sync offset for Triple 0"
+    },
+    {
+      "source": 14,
+      "target": 15,
+      "minutes": 37,
+      "action": "EV2 performing Triple 0"
+    },
+    {
+      "source": 14,
+      "target": 12,
+      "minutes": -7,
+      "action": "EV2 --> EV3 sync offset for Triple 0"
+    },
+    {
+      "source": 15,
+      "target": 24,
+      "minutes": 23,
+      "action": "EV2 performing Triple 1"
+    },
+    {
+      "source": 15,
+      "target": 15,
+      "minutes": 0,
+      "action": "EV2 --> EV2 sync offset for Triple 1"
+    },
+    {
+      "source": 16,
+      "target": 19,
+      "minutes": 53,
+      "action": "EV3 performing Triple 1"
+    },
+    {
+      "source": 16,
+      "target": 15,
+      "minutes": -4,
+      "action": "EV3 --> EV2 sync offset for Triple 1"
+    },
+    {
+      "source": 17,
+      "target": 18,
+      "minutes": 37,
+      "action": "EV1 performing Triple 1"
+    },
+    {
+      "source": 17,
+      "target": 15,
+      "minutes": -7,
+      "action": "EV1 --> EV2 sync offset for Triple 1"
+    },
+    {
+      "source": 18,
+      "target": 21,
+      "minutes": 47,
+      "action": "EV1 performing Double 3"
+    },
+    {
+      "source": 18,
+      "target": 18,
+      "minutes": 0,
+      "action": "EV1 --> EV1 sync offset for Double 3"
+    },
+    {
+      "source": 19,
+      "target": 20,
+      "minutes": 43,
+      "action": "EV3 performing Double 3"
+    },
+    {
+      "source": 19,
+      "target": 18,
+      "minutes": 1,
+      "action": "EV3 --> EV1 sync offset for Double 3"
+    },
+    {
+      "source": 20,
+      "target": 22,
+      "minutes": 71,
+      "action": "EV3 performing Double 4"
+    },
+    {
+      "source": 20,
+      "target": 20,
+      "minutes": 0,
+      "action": "EV3 --> EV3 sync offset for Double 4"
+    },
+    {
+      "source": 21,
+      "target": 23,
+      "minutes": 47,
+      "action": "EV1 performing Double 4"
+    },
+    {
+      "source": 21,
+      "target": 20,
+      "minutes": -13,
+      "action": "EV1 --> EV3 sync offset for Double 4"
+    },
+    {
+      "source": 22,
+      "target": 29,
+      "minutes": 67,
+      "action": "EV3 performing Single 6"
+    },
+    {
+      "source": 22,
+      "target": 22,
+      "minutes": 0,
+      "action": "EV3 --> EV3 sync offset for Single 6"
+    },
+    {
+      "source": 23,
+      "target": 27,
+      "minutes": 71,
+      "action": "EV1 performing Single 7"
+    },
+    {
+      "source": 23,
+      "target": 23,
+      "minutes": 0,
+      "action": "EV1 --> EV1 sync offset for Single 7"
+    },
+    {
+      "source": 24,
+      "target": 25,
+      "minutes": 79,
+      "action": "EV2 performing Single 8"
+    },
+    {
+      "source": 24,
+      "target": 24,
+      "minutes": 0,
+      "action": "EV2 --> EV2 sync offset for Single 8"
+    },
+    {
+      "source": 25,
+      "target": 26,
+      "minutes": 89,
+      "action": "EV2 performing Single 9"
+    },
+    {
+      "source": 25,
+      "target": 25,
+      "minutes": 0,
+      "action": "EV2 --> EV2 sync offset for Single 9"
+    },
+    {
+      "source": 26,
+      "target": 30,
+      "minutes": 17,
+      "action": "EV2 performing Double 5"
+    },
+    {
+      "source": 26,
+      "target": 26,
+      "minutes": 0,
+      "action": "EV2 --> EV2 sync offset for Double 5"
+    },
+    {
+      "source": 27,
+      "target": 31,
+      "minutes": 41,
+      "action": "EV1 performing Double 5"
+    },
+    {
+      "source": 27,
+      "target": 26,
+      "minutes": -19,
+      "action": "EV1 --> EV2 sync offset for Double 5"
+    },
+    {
+      "source": 28,
+      "target": 28,
+      "minutes": 0,
+      "action": "EV4 --> EV4 sync offset for procedure end"
+    },
+    {
+      "source": 29,
+      "target": 28,
+      "minutes": 0,
+      "action": "EV3 --> EV4 sync offset for procedure end"
+    },
+    {
+      "source": 30,
+      "target": 28,
+      "minutes": 0,
+      "action": "EV2 --> EV4 sync offset for procedure end"
+    },
+    {
+      "source": 31,
+      "target": 28,
+      "minutes": 0,
+      "action": "EV1 --> EV4 sync offset for procedure end"
+    }
+  ]
+}
