@@ -218,25 +218,47 @@ fn initialize(
     set_bounds(stn)
 }
 
-/// Commit an as-performed time to the STN. Updates bounds on remaining activities. as_performed must fall within the current bounds of the node. Errs if the as_performed time creates a conflict
+/// Commit an as-performed time to the STN. Updates bounds on remaining activities. Errs if the as_performed time creates a conflict
 fn commit_and_tighten(stn: &mut STN, node_id: i32, as_performed: f64) -> Result<(), String> {
-    let b = stn.bounds[&node_id];
+    let b = match stn.bounds.get(&node_id) {
+        Some(b) => b,
+        None => return Err(format!("cannot find bounds for node_id {}", node_id)),
+    };
 
     // check that as_performed falls within the node's bounds
-    if as_performed >= b.lower() && as_performed <= b.upper() {
+    if as_performed < b.lower() || as_performed > b.upper() {
         return Err(format!(
-            "as_performed value out of bounds. {} not in bounds {}",
-            as_performed, b
+            "as_performed value {} for node ID {} is not in bounds {}",
+            as_performed, node_id, b
         ));
     }
 
-    // work on a copy of the bounds in case thie
-    let mut new_bounds = stn.bounds.clone();
+    let b_as_performed = Interval::new(as_performed, as_performed);
 
-    new_bounds.insert(node_id, Interval::new(as_performed, as_performed));
+    // assign the as_performed bounds
+    stn.bounds.insert(node_id, b_as_performed);
 
-    // let unassigned_neighbors = stn.distance_graph.
-    // stn.node_indices[&node_id]];
+    let iter = 1_i32..stn.node_indices.len() as i32 + 1;
+
+    // update all the neighbor bounds
+    for i in iter {
+        // no need to tighten self
+        if i == node_id {
+            continue;
+        }
+
+        // get the neighbor's current bounds
+        let b_i = stn.bounds[&i];
+
+        // get the interval to the neighbor according to the constraint table
+        let lower = stn.constraint_table[&(i, node_id)];
+        let upper = stn.constraint_table[&(node_id, i)];
+        let interval_to_neighbor = Interval::new(-lower, upper);
+
+        // actually update the bounds on the neighbor
+        let updated_bounds = b_i ^ (b_as_performed + interval_to_neighbor);
+        stn.bounds.insert(i, updated_bounds);
+    }
 
     Ok(())
 }
@@ -296,9 +318,18 @@ impl STN {
     pub fn perform_apsp(&mut self) -> Result<(), JsValue> {
         // TODO: remove wasm
         match perform_apsp(self) {
-            Ok(()) => return Ok(()),
-            Err(e) => return Err(JsValue::from_str(&e)),
-        };
+            Ok(()) => Ok(()),
+            Err(e) => Err(JsValue::from_str(&e)),
+        }
+    }
+
+    /// Commit an as-performed time and update bounds
+    #[wasm_bindgen(catch, method, js_name = commitAndTighten)]
+    pub fn commit_and_tighten(&mut self, node_id: i32, as_performed: f64) -> Result<(), JsValue> {
+        match commit_and_tighten(self, node_id, as_performed) {
+            Ok(()) => Ok(()),
+            Err(e) => Err(JsValue::from_str(&e)),
+        }
     }
 }
 
@@ -884,6 +915,123 @@ mod tests {
             stn.bounds.len(),
             "bounds are the same size"
         );
+
+        for (i, b) in expected_bounds.iter() {
+            assert_eq!(
+                *b, stn.bounds[i],
+                "{:?} want {}, got {}",
+                i, *b, stn.bounds[i],
+            )
+        }
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_commit_and_tighten_walkthrough_data() -> Result<(), String> {
+        // define the graph from the walkthrough
+        let edges = vec![
+            Edge {
+                source: 1,
+                target: 2,
+                interval: Interval::new(10., 20.),
+                minutes: 0.,
+            },
+            Edge {
+                source: 2,
+                target: 3,
+                interval: Interval::new(30., 40.),
+                minutes: 0.,
+            },
+            Edge {
+                source: 4,
+                target: 3,
+                interval: Interval::new(10., 20.),
+                minutes: 0.,
+            },
+            Edge {
+                source: 4,
+                target: 5,
+                interval: Interval::new(40., 50.),
+                minutes: 0.,
+            },
+            Edge {
+                source: 1,
+                target: 5,
+                interval: Interval::new(60., 70.),
+                minutes: 0.,
+            },
+        ];
+
+        let data = RegistrationPayload { edges: edges };
+
+        let options = RegistrationOptions {
+            implicit_intervals: false,
+            execution_uncertainty: 0.,
+        };
+
+        let mut stn = STN::new();
+        build_distance_graph(&mut stn, &data, &options)?;
+        perform_apsp(&mut stn)?;
+        set_bounds(&mut stn)?;
+
+        // test what happens after the first activity is set to 0
+        commit_and_tighten(&mut stn, 1, 0.)?;
+
+        let expected_bounds: HashMap<i32, Interval> = [
+            (1, Interval::new(0., 0.)),
+            (2, Interval::new(10., 20.)),
+            (3, Interval::new(40., 50.)),
+            (4, Interval::new(20., 30.)),
+            (5, Interval::new(60., 70.)),
+        ]
+        .iter()
+        .cloned()
+        .collect();
+
+        for (i, b) in expected_bounds.iter() {
+            assert_eq!(
+                *b, stn.bounds[i],
+                "{:?} want {}, got {}",
+                i, *b, stn.bounds[i],
+            )
+        }
+
+        // test what happens when the second activity is set to 15
+        commit_and_tighten(&mut stn, 2, 15.)?;
+
+        let expected_bounds: HashMap<i32, Interval> = [
+            (1, Interval::new(0., 0.)),
+            (2, Interval::new(15., 15.)),
+            (3, Interval::new(45., 50.)),
+            (4, Interval::new(25., 30.)),
+            (5, Interval::new(65., 70.)),
+        ]
+        .iter()
+        .cloned()
+        .collect();
+
+        for (i, b) in expected_bounds.iter() {
+            assert_eq!(
+                *b, stn.bounds[i],
+                "{:?} want {}, got {}",
+                i, *b, stn.bounds[i],
+            )
+        }
+
+        // test what happens when the third activity is set to 46
+        commit_and_tighten(&mut stn, 3, 46.)?;
+
+        let expected_bounds: HashMap<i32, Interval> = [
+            (1, Interval::new(0., 0.)),
+            (2, Interval::new(15., 15.)),
+            (3, Interval::new(46., 46.)),
+            (4, Interval::new(26., 30.)),
+            (5, Interval::new(66., 70.)),
+        ]
+        .iter()
+        .cloned()
+        .collect();
 
         for (i, b) in expected_bounds.iter() {
             assert_eq!(
