@@ -104,6 +104,8 @@ impl BitXorAssign for Interval {
     }
 }
 
+// TODO: would be cool to do `in`, <, > operators too
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -306,5 +308,19 @@ mod tests {
                 case.in1, case.in2, case.out
             );
         }
+    }
+
+    #[test]
+    fn test_mixed_operators() {
+        let i1 = Interval::new(40., 50.);
+        let i2 = Interval::new(15., 15.);
+        let i3 = Interval::new(30., 40.);
+
+        let res = i1 ^ (i2 + i3);
+        assert_eq!(
+            res,
+            Interval::new(45., 50.),
+            "interval math from scheduling walkthrough"
+        );
     }
 }
