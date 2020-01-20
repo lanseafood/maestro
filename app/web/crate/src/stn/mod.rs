@@ -50,6 +50,8 @@ pub struct STN {
   distance_graph: Graph<i32, f64>,
   /// use ids to key the (column, row) of the constraint table
   constraint_table: HashMap<(i32, i32), f64>,
+  // TODO: implement bounds like so?
+  bounds: HashMap<i32, Interval>,
   elapsed_time: f64,
 }
 
@@ -69,13 +71,18 @@ fn build_distance_graph(
   nodes.dedup();
 
   for node in nodes.iter() {
+    // track the node's bounds
+    stn.bounds.insert(*node, Interval::default());
+    // add the node to the graph
     let node_index = stn.distance_graph.add_node(*node);
+    // track the node_index for later lookups
     stn.node_indices.insert(*node, node_index);
-    // edge from any node to itself needs to be 0
+    // create an edge from the node to itself
+    // needs to be 0. accounts for the first initialization step in APSP
     stn.distance_graph.add_edge(node_index, node_index, 0.);
   }
 
-  // now set the edges with weights
+  // now set the weights on edges between nodes
   for edge in data.edges.iter() {
     // panic if one of the nodes can't be found
     let source = match stn.node_indices.get(&edge.source) {
@@ -178,6 +185,53 @@ fn perform_apsp(stn: &mut STN) -> Result<(), String> {
   Ok(())
 }
 
+/// Use the constraint table to set the bounds on each node
+fn set_bounds(stn: &mut STN) -> Result<(), String> {
+  for i in 1_i32..stn.node_indices.len() as i32 + 1 {
+    let d_upper = match stn.constraint_table.get(&(1, i)) {
+      Some(d) => d,
+      None => {
+        return Err(format!(
+          "cannot find distance (1, {}) in constraint table",
+          i
+        ))
+      }
+    };
+
+    let d_lower = match stn.constraint_table.get(&(i, 1)) {
+      Some(d) => -d,
+      None => {
+        return Err(format!(
+          "cannot find distance ({}, 1) in constraint table",
+          i
+        ))
+      }
+    };
+
+    stn.bounds.insert(i, Interval::new(d_lower, *d_upper));
+  }
+
+  Ok(())
+}
+
+/// Initialize the STN using APSP set activity bounds
+fn initialize(
+  stn: &mut STN,
+  data: &RegistrationPayload,
+  options: &RegistrationOptions,
+) -> Result<(), String> {
+  build_distance_graph(stn, &data, &options)?;
+  perform_apsp(stn)?;
+  set_bounds(stn)
+}
+
+/// Commit an as-performed time to the STN. Updates bounds on remaining activities
+/// as_performed should fall within the current bounds of the node
+fn commit(stn: &mut STN, node_id: i32, as_performed: f64) -> Result<(), String> {
+  // check that as_performed falls within the node's bounds
+  Ok(())
+}
+
 /// (node count, edge count) tuple struct
 #[wasm_bindgen]
 pub struct RegistrationEnum(usize, usize);
@@ -187,10 +241,22 @@ impl STN {
   #[wasm_bindgen(constructor)]
   pub fn new() -> STN {
     STN {
+      bounds: HashMap::new(),
       node_indices: HashMap::new(),
       distance_graph: Graph::new(),
       constraint_table: HashMap::new(),
       elapsed_time: 0.,
+    }
+  }
+
+  /// Initialize the STN
+  pub fn initialize(&mut self, payload: &JsValue, options: &JsValue) -> Result<(), JsValue> {
+    let data: RegistrationPayload = payload.into_serde().unwrap();
+    let options: RegistrationOptions = options.into_serde().unwrap();
+
+    match initialize(self, &data, &options) {
+      Ok(()) => Ok(()),
+      Err(e) => Err(JsValue::from_str(&e)),
     }
   }
 
@@ -199,13 +265,14 @@ impl STN {
     format!("{} elapsed time", self.elapsed_time)
   }
 
-  /// Register task data as a distance graph. Returns (node count, edge count) tuple. Note that an edge with weight 0 will be created for every node to itself
+  /// Register task data as a distance graph. Returns (node count, edge count) tuple
   #[wasm_bindgen(catch, method, js_name = registerGraph)]
   pub fn register_graph(
     &mut self,
     payload: &JsValue,
     options: &JsValue,
   ) -> Result<RegistrationEnum, JsValue> {
+    // TODO: remove wasm
     let data: RegistrationPayload = payload.into_serde().unwrap();
     let options: RegistrationOptions = options.into_serde().unwrap();
 
@@ -218,12 +285,15 @@ impl STN {
   /// Perform All Pairs Shortest Paths (Floyd-Warshall) algorithm to calculate inferred constraints.
   #[wasm_bindgen(catch, method, js_name = performAPSP)]
   pub fn perform_apsp(&mut self) -> Result<(), JsValue> {
+    // TODO: remove wasm
     match perform_apsp(self) {
       Ok(()) => return Ok(()),
       Err(e) => return Err(JsValue::from_str(&e)),
     };
   }
 }
+
+// TODO: code:test ratio is 1:2. move tests into a separate file?
 
 #[cfg(test)]
 mod tests {
@@ -735,6 +805,82 @@ mod tests {
         *dist, stn.constraint_table[i],
         "{:?} want {}, got {}",
         i, *dist, stn.constraint_table[i],
+      )
+    }
+
+    Ok(())
+  }
+
+  #[test]
+  fn test_set_bounds_walkthrough_data() -> Result<(), String> {
+    // define the graph from the walkthrough
+    let edges = vec![
+      Edge {
+        source: 1,
+        target: 2,
+        interval: Interval::new(10., 20.),
+        minutes: 0.,
+      },
+      Edge {
+        source: 2,
+        target: 3,
+        interval: Interval::new(30., 40.),
+        minutes: 0.,
+      },
+      Edge {
+        source: 4,
+        target: 3,
+        interval: Interval::new(10., 20.),
+        minutes: 0.,
+      },
+      Edge {
+        source: 4,
+        target: 5,
+        interval: Interval::new(40., 50.),
+        minutes: 0.,
+      },
+      Edge {
+        source: 1,
+        target: 5,
+        interval: Interval::new(60., 70.),
+        minutes: 0.,
+      },
+    ];
+
+    let data = RegistrationPayload { edges: edges };
+
+    let options = RegistrationOptions {
+      implicit_intervals: false,
+      execution_uncertainty: 0.,
+    };
+
+    let mut stn = STN::new();
+    build_distance_graph(&mut stn, &data, &options)?;
+    perform_apsp(&mut stn)?;
+    set_bounds(&mut stn)?;
+
+    let expected_bounds: HashMap<i32, Interval> = [
+      (1, Interval::new(0., 0.)),
+      (2, Interval::new(10., 20.)),
+      (3, Interval::new(40., 50.)),
+      (4, Interval::new(20., 30.)),
+      (5, Interval::new(60., 70.)),
+    ]
+    .iter()
+    .cloned()
+    .collect();
+
+    assert_eq!(
+      expected_bounds.len(),
+      stn.bounds.len(),
+      "bounds are the same size"
+    );
+
+    for (i, b) in expected_bounds.iter() {
+      assert_eq!(
+        *b, stn.bounds[i],
+        "{:?} want {}, got {}",
+        i, *b, stn.bounds[i],
       )
     }
 
