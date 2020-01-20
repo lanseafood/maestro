@@ -15,16 +15,16 @@ mod stn;
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
 pub fn set_panic_hook() {
-  #[cfg(feature = "console_error_panic_hook")]
-  console_error_panic_hook::set_once();
+    #[cfg(feature = "console_error_panic_hook")]
+    console_error_panic_hook::set_once();
 }
 
 #[wasm_bindgen]
 pub fn run() -> Result<(), JsValue> {
-  #[cfg(debug_assertions)]
-  console_error_panic_hook::set_once();
+    #[cfg(debug_assertions)]
+    console_error_panic_hook::set_once();
 
-  console::log_1(&JsValue::from_str("Initialized STN library"));
+    console::log_1(&JsValue::from_str("Initialized STN library"));
 
-  Ok(())
+    Ok(())
 }
