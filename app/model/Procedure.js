@@ -37,6 +37,10 @@ module.exports = class Procedure {
 		this.name = '';
 		this.number = '';
 		this.uniqueId = '';
+		this.book = '';
+		this.applicability = '';
+		this.version = '';
+		this.procCode = '';
 		this.location = '';
 		this.duration = '';
 		this.crewRequired = '';
@@ -252,11 +256,15 @@ module.exports = class Procedure {
 		// Save the procedure Name
 		this.setName(procDef.procedure_name);
 		this.number = procDef.procedure_number;
-		this.uniqueId = procDef.uniqueId;
+		this.uniqueId = procDef.metaData.uniqueid;
+		this.book = procDef.metaData.book;
+		this.applicability = procDef.metaData.applicability;
+		this.version = procDef.metaData.version;
+		this.procCode = procDef.metaData.procCode;
 		this.objective = procDef.procedure_objective;
-		this.location = procDef.location;
-		this.duration = procDef.duration;
-		this.crewRequired = procDef.crew;
+		this.location = procDef.LOCATION;
+		this.duration = procDef.DURATION;
+		this.crewRequired = procDef.CREW;
 		this.referencedProcedures = procDef.referenced_procedure;
 
 		if (procDef.columns) {

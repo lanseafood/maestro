@@ -230,7 +230,7 @@ module.exports = class CommanderProgram extends Program {
 			this.renderBasicFormat(procedure, SodfDocxProcedureWriter, 'SODF DOCX', 'sodf.docx');
 		}
 
-		if (this.sodfHtml) {
+		if (this.ipvXml) {
 			this.renderBasicFormat(procedure, IpvXmlProcedureWriter, 'IPV XML', 'ipv.xml');
 		}
 
