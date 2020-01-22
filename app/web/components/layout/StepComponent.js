@@ -7,7 +7,7 @@ const stateHandler = require('../../state/index');
 const liStyle = {
 	position: 'relative'
 };
-const editButtonStyle = {
+const editButtonsContainerStyle = {
 	position: 'absolute',
 	right: '5px',
 	top: '3px'
@@ -39,6 +39,19 @@ class StepComponent extends React.Component {
 		this.setState({ editMode: true });
 	}
 
+	handleDeleteButtonClick = (e) => {
+		console.log('edit button click');
+		e.preventDefault();
+		e.stopPropagation();
+
+		stateHandler.deleteStep(
+			this.props.activityIndex,
+			this.props.divisionIndex,
+			this.props.primaryColumnKey,
+			this.props.stepIndex
+		);
+	}
+
 	getKey() {
 		return `act${this.props.activityIndex}-div${this.props.divisionIndex}-${this.props.primaryColumnKey}-step${this.props.stepIndex}`;
 	}
@@ -66,13 +79,20 @@ class StepComponent extends React.Component {
 
 	renderButton() {
 		return (
-			<button
-				style={editButtonStyle}
-				onClick={this.handleEditButtonClick}
-				className='edit-button'
-			>
-				edit
-			</button>
+			<div style={editButtonsContainerStyle} className='modify-step-button-container'>
+				<button
+					onClick={this.handleEditButtonClick}
+					className='edit-button'
+				>
+					edit
+				</button>
+				<button
+					onClick={this.handleDeleteButtonClick}
+					className='delete-button'
+				>
+					delete
+				</button>
+			</div>
 		);
 	}
 

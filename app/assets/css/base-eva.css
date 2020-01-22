@@ -216,10 +216,10 @@ img {
 	background-color: #eee;
 }
 
-.step-component .edit-button{
+.step-component .modify-step-button-container{
 	display: none;
 }
 
-.step-component:hover .edit-button{
+.step-component:hover .modify-step-button-container{
 	display: block;
 }

@@ -32,7 +32,7 @@ function makeStep() {
 function looksLikeViewMode(wrapper, stepText = baseStepText) {
 	assert.isFalse(wrapper.state().editMode, 'wrapper.state.editMode should be false');
 	assert.lengthOf(wrapper.find('.edit-button'), 1, 'should have 1 edit button');
-	assert.strictEqual(wrapper.find('div').text(), stepText);
+	assert.strictEqual(wrapper.find('div').at(1).text(), stepText);
 }
 
 function looksLikeEditMode(wrapper) {

@@ -166,6 +166,23 @@ class App extends React.Component {
 
 		};
 
+		stateHandler.deleteStep = (actIndex, divIndex, colKey, stepIndex) => {
+
+			const newProc = this.state.procedure;
+
+			newProc.tasks[actIndex].concurrentSteps[divIndex].subscenes[colKey]
+				.splice(stepIndex, 1);
+
+			recordAndReportChange(newProc);
+
+			saveChange(this.program, newProc, actIndex);
+
+			this.setState({
+				procedure: newProc
+			});
+
+		};
+
 		console.log(`Procedure set to ${procObject.name}`);
 	};
 
