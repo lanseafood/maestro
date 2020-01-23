@@ -256,11 +256,13 @@ module.exports = class Procedure {
 		// Save the procedure Name
 		this.setName(procDef.procedure_name);
 		this.number = procDef.procedure_number;
-		this.uniqueId = procDef.metaData.uniqueid;
-		this.book = procDef.metaData.book;
-		this.applicability = procDef.metaData.applicability;
-		this.version = procDef.metaData.version;
-		this.procCode = procDef.metaData.procCode;
+		if (procDef.metaData) {
+			this.uniqueId = procDef.metaData.uniqueid;
+			this.book = procDef.metaData.book;
+			this.applicability = procDef.metaData.applicability;
+			this.version = procDef.metaData.version;
+			this.procCode = procDef.metaData.procCode;
+		}
 		this.objective = procDef.procedure_objective;
 		this.location = procDef.LOCATION;
 		this.duration = procDef.DURATION;
