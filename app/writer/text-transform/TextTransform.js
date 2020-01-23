@@ -77,14 +77,14 @@ const transforms = [
 	},
 	{
 		text: '<',
-		html: '&lt;',
+		html: '<',
 		ipvXml: '&lt;',
 		docx: '<',
 		react: null // see ReactTextTransform
 	},
 	{
 		text: '&',
-		html: '&amp;',
+		html: '&',
 		ipvXml: '&am;',
 		docx: '&',
 		react: null // see ReactTextTransform
