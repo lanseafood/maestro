@@ -223,3 +223,7 @@ img {
 .step-component:hover .modify-step-button-container{
 	display: block;
 }
+
+.modify-step-button-container button {
+	margin: 0 2px;
+}

@@ -9,13 +9,16 @@ const liStyle = {
 };
 const editButtonsContainerStyle = {
 	position: 'absolute',
-	right: '5px',
-	top: '3px'
+	backgroundColor: '#eee',
+	right: '3px',
+	top: '-25px'
 };
 const textareaStyle = {
 	height: '80px',
 	width: '100%'
 };
+
+// NOTE: See base-eva.css for :hover styles, etc
 
 class StepComponent extends React.Component {
 
