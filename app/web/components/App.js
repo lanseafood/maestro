@@ -264,8 +264,8 @@ class App extends React.Component {
 	render() {
 		return (
 			<div className='app'>
-				<div className='container'>
-					<HeaderComponent />
+				<HeaderComponent />
+				<div className='procedure-container' style={{ margin: '0 20px' }}>
 					{!this.state.procedure ?
 						this.renderNoProcedure() :
 						(

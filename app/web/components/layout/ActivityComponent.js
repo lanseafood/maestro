@@ -30,7 +30,7 @@ class ActivityComponent extends React.Component {
 	render() {
 
 		return (
-			<React.Fragment>
+			<div className='activityWrapper'>
 				<h2
 					id={filters.uniqueHtmlId(this.props.activity.title)}
 					data-level="procedure"
@@ -62,7 +62,7 @@ class ActivityComponent extends React.Component {
 						})}
 					</tbody>
 				</table>
-			</React.Fragment>
+			</div>
 		);
 	}
 

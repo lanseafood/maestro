@@ -7,7 +7,6 @@
 body {
 	font-family: Arial,sans-serif;
 	margin: auto;
-	max-width: 90%;
 }
 
 td {
@@ -23,6 +22,7 @@ td {
 	color: #333333;
 	margin-bottom: 10px;
 	page-break-after: always;
+	width: 100%;
 }
 
 .gridtable th {
