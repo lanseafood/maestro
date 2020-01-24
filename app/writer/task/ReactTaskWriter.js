@@ -3,6 +3,7 @@
 const path = require('path');
 const React = require('react');
 
+const Series = require('../../model/Series');
 const SeriesComponent = require('../../web/components/layout/SeriesComponent');
 
 const getImageFileDimensions = require('image-size');
@@ -67,7 +68,7 @@ module.exports = class ReactTaskWriter extends TaskWriter {
 					content: [],
 					colspan: 1,
 
-					series: [], // FIXME is this right?
+					series: new Series(), // FIXME is this right?
 					columnKeys: [this.task.getColumns()[c]] // ['NONE'] // FIXME
 				};
 				columns[c].stateColumnKey = columns[c].columnKeys[0];
@@ -81,6 +82,7 @@ module.exports = class ReactTaskWriter extends TaskWriter {
 		return (
 			<tr>
 				{Object.keys(columns).map((colId) => {
+					// console.log(columns[colId].series); // FIXME remove
 					const startStep = this.preInsertSteps(); // FIXME this doesn't seem right
 
 					const key = maestroKey.getKey(

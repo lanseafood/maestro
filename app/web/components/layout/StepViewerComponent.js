@@ -48,7 +48,8 @@ const StepViewerComponent = ({
 	handleEditButtonClick, handleDeleteButtonClick
 }) => {
 
-	stepState.columnKeys = columnKeys;
+	// why does this need to be set here? Is this why actors inappropriately shown in react? FIXME.
+	stepState.props.columnKeys = columnKeys;
 
 	const options = { level: 0 };
 

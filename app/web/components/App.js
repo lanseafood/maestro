@@ -1,20 +1,14 @@
-const fs = require('fs');
-const path = require('path');
+// const fs = require('fs'); // FIXME cleanup
+// const path = require('path');
 const React = require('react');
-const jsdiff = require('diff');
 const YAML = require('js-yaml');
 
 const stateHandler = require('../state/index');
-// const PropTypes = require('prop-types');
+// const PropTypes = require('prop-types'); FIXME CLEANPUP
 const HeaderComponent = require('./layout/HeaderComponent');
 const ProcedureViewerComponent = require('./pages/ProcedureViewerComponent');
 const ProcedureSelectorComponent = require('./pages/ProcedureSelectorComponent');
 const ReactProcedureWriter = require('../../writer/procedure/ReactProcedureWriter');
-
-const changes = {
-	lastDefinitionYaml: null,
-	diffs: []
-};
 
 /**
  * Compare procedure against previous version of procedure. Record state for comparison with future
@@ -22,7 +16,10 @@ const changes = {
  *
  * @param {Procedure} latestProcedure  Procedure object with latest updates, used to generate latest
  *                                     YAML string to compare against previous change.
+ *
+ * FIXME: the new implementation of saving steps does not use this. Generalize...
  */
+/*
 function recordAndReportChange(latestProcedure) {
 	const newYaml = YAML.dump(latestProcedure.getDefinition());
 
@@ -54,6 +51,7 @@ function recordAndReportChange(latestProcedure) {
 	changes.lastDefinitionYaml = newYaml;
 
 }
+*/
 
 /**
  * Save yamlString to Activity file
@@ -62,19 +60,18 @@ function recordAndReportChange(latestProcedure) {
  * @param {Task} activity
  * @param {string} yamlString
  */
-function saveChangeElectron(program, activity, yamlString) {
-	fs.writeFile(
-		path.join(program.tasksPath, activity.taskReqs.file),
-		yamlString,
-		{},
-		(err) => {
-			if (err) {
-				throw err;
-			}
-		}
-	);
-
-}
+// function saveChangeElectron(program, activity, yamlString) {
+// fs.writeFile(
+// path.join(program.tasksPath, activity.taskReqs.file),
+// yamlString,
+// {},
+// (err) => {
+// if (err) {
+// throw err;
+// }
+// }
+// );
+// }
 
 /**
  * Save yamlString to Activity file
@@ -83,27 +80,27 @@ function saveChangeElectron(program, activity, yamlString) {
  * @param {Task} activity
  * @param {string} yamlString
  */
-function saveChangeWeb(program, activity, yamlString) {
-	fetch(
-		`edit/tasks/${activity.taskReqs.file}`,
-		{
-			method: 'POST', // or 'PUT'
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({
-				yaml: yamlString
-			})
-		}
-	)
-		.then((response) => response.json())
-		.then((data) => {
-			console.log('Success:', data);
-		})
-		.catch((error) => {
-			console.error('Error:', error);
-		});
-}
+// function saveChangeWeb(program, activity, yamlString) {
+// fetch(
+// `edit/tasks/${activity.taskReqs.file}`,
+// {
+// method: 'POST', // or 'PUT'
+// headers: {
+// 'Content-Type': 'application/json'
+// },
+// body: JSON.stringify({
+// yaml: yamlString
+// })
+// }
+// )
+// .then((response) => response.json())
+// .then((data) => {
+// console.log('Success:', data);
+// })
+// .catch((error) => {
+// console.error('Error:', error);
+// });
+// }
 
 /**
  * Save changes for a particular Activity
@@ -113,16 +110,15 @@ function saveChangeWeb(program, activity, yamlString) {
  *                                              files
  * @param {number} activityIndex                Activity file to save
  */
-function saveChange(program, procedure, activityIndex) {
-	const activity = procedure.tasks[activityIndex];
-	const yamlString = YAML.dump(activity.getTaskDefinition());
-
-	if (window.isElectron) {
-		saveChangeElectron(program, activity, yamlString);
-	} else {
-		saveChangeWeb(program, activity, yamlString);
-	}
-}
+// function saveChange(program, procedure, activityIndex) {
+// const activity = procedure.tasks[activityIndex];
+// const yamlString = YAML.dump(activity.getTaskDefinition());
+// if (window.isElectron) {
+// saveChangeElectron(program, activity, yamlString);
+// } else {
+// saveChangeWeb(program, activity, yamlString);
+// }
+// }
 
 class App extends React.Component {
 
@@ -136,14 +132,24 @@ class App extends React.Component {
 	};
 
 	setProcedure = (procObject) => {
-		stateHandler.state.procedure = procObject;
-		changes.lastDefinitionYaml = YAML.dump(procObject.getDefinition());
+
+		stateHandler.setState({
+			procedure: procObject,
+
+			// this.program is set in ElectronProgram constructor...FIXME?
+			program: this.program,
+
+			// Set initial YAML representation of entire procedure (including activities). Changes
+			// can diff against this.
+			lastProcDefinitionYaml: YAML.dump(procObject.getDefinition())
+		});
 
 		this.setState({
 			procedure: stateHandler.state.procedure,
 			procedureWriter: new ReactProcedureWriter(window.maestro.app, procObject)
 		});
 
+		/* FIXME remove
 		stateHandler.modifyStep = (actIndex, divIndex, colKey, stepIndex, rawDefinition) => {
 
 			// previously cloned-deep this because I thought I might need to. Doesn't seem necessary
@@ -154,34 +160,39 @@ class App extends React.Component {
 			const division = newProc.tasks[actIndex].concurrentSteps[divIndex];
 			const newStep = division.makeStep(colKey, rawDefinition);
 
-			division.subscenes[colKey][stepIndex] = newStep;
+			division.subscenes[colKey].steps[stepIndex] = newStep;
 
 			recordAndReportChange(newProc);
 
-			saveChange(this.program, newProc, actIndex);
+			stateHandler.saveChange(this.program, newProc, actIndex);
+			// saveChange(this.program, newProc, actIndex);
 
 			this.setState({
 				procedure: newProc
 			});
 
 		};
+		*/
 
+		/*
 		stateHandler.deleteStep = (actIndex, divIndex, colKey, stepIndex) => {
 
 			const newProc = this.state.procedure;
 
-			newProc.tasks[actIndex].concurrentSteps[divIndex].subscenes[colKey]
+			newProc.tasks[actIndex].concurrentSteps[divIndex].subscenes[colKey].steps
 				.splice(stepIndex, 1);
 
-			recordAndReportChange(newProc);
+			stateHandler.recordAndReportChange(newProc);
 
-			saveChange(this.program, newProc, actIndex);
+			stateHandler.saveChange(this.program, newProc, actIndex);
+			// saveChange(this.program, newProc, actIndex);
 
 			this.setState({
 				procedure: newProc
 			});
 
 		};
+		*/
 
 		// const draggedFrom = { activityIndex, divisionIndex, primaryColumnKey, stepIndex };
 		stateHandler.handleMoveStep = (from, to) => {
@@ -192,12 +203,12 @@ class App extends React.Component {
 			const fromList = newProc
 				.tasks[from.activityIndex]
 				.concurrentSteps[from.divisionIndex]
-				.subscenes[from.primaryColumnKey];
+				.subscenes[from.primaryColumnKey].steps;
 
 			const toList = newProc
 				.tasks[to.activityIndex]
 				.concurrentSteps[to.divisionIndex]
-				.subscenes[to.primaryColumnKey];
+				.subscenes[to.primaryColumnKey].steps;
 
 			const [step] = fromList.splice(from.stepIndex, 1);
 
@@ -225,11 +236,13 @@ class App extends React.Component {
 
 			}
 
-			recordAndReportChange(newProc);
+			stateHandler.recordAndReportChange(newProc);
 
-			saveChange(this.program, newProc, from.activityIndex);
+			stateHandler.saveChange(this.program, newProc, from.activityIndex);
+			// saveChange(this.program, newProc, from.activityIndex);
 			if (!match('activityIndex')) {
-				saveChange(this.program, newProc, to.activityIndex);
+				stateHandler.saveChange(this.program, newProc, to.activityIndex);
+				// saveChange(this.program, newProc, to.activityIndex);
 			}
 
 			this.setState({
@@ -266,14 +279,14 @@ class App extends React.Component {
 			<div className='app'>
 				<HeaderComponent />
 				<div className='procedure-container' style={{ margin: '0 20px' }}>
-					{!this.state.procedure ?
-						this.renderNoProcedure() :
+					{this.state.procedure ?
 						(
 							<ProcedureViewerComponent
 								procedure={this.state.procedure}
 								getProcedureWriter={this.getProcedureWriter}
 							/>
-						)
+						) :
+						this.renderNoProcedure()
 					}
 				</div>
 			</div>

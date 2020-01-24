@@ -109,7 +109,7 @@ module.exports = class EvaDocxTaskWriter extends DocxTaskWriter {
 
 	/**
 	 * todo Add description
-	 * @param {Array} series             Array of Step objects belonging to an actor or joint actors
+	 * @param {Series} series            Array of Step objects belonging to an actor or joint actors
 	 * @param {Array|string} columnKeys  String column key for the column, or array if joint actors
 	 *                                   from multiple columns
 	 * @return {Array}                   Array of docx.Paragraph objects
@@ -117,7 +117,7 @@ module.exports = class EvaDocxTaskWriter extends DocxTaskWriter {
 	writeSeries(series, columnKeys) {
 		const steps = [];
 		this.preInsertSteps();
-		for (const step of series) {
+		for (const step of series.steps) {
 			step.columnKeys = Array.isArray(columnKeys) ? columnKeys : [columnKeys];
 			steps.push(...this.insertStep(step));
 		}

@@ -50,12 +50,12 @@ describe('Task constructor - Positive Testing', function() {
 			expect(task.concurrentSteps).to.have.all.keys(0);
 
 			// eslint-disable-next-line no-unused-expressions
-			expect(task.concurrentSteps[0].subscenes.EV1).to.exist;
-			expect(task.concurrentSteps[0].subscenes.EV1).to.be.an('array');
-			expect(task.concurrentSteps[0].subscenes.EV1).to.have.all.keys(0);
+			expect(task.concurrentSteps[0].subscenes.EV1.steps).to.exist;
+			expect(task.concurrentSteps[0].subscenes.EV1.steps).to.be.an('array');
+			expect(task.concurrentSteps[0].subscenes.EV1.steps).to.have.all.keys(0);
 
-			assert.isArray(task.concurrentSteps[0].subscenes.EV1[0].text);
-			assert.strictEqual(task.concurrentSteps[0].subscenes.EV1[0].text[0], 'Go Outside');
+			assert.isArray(task.concurrentSteps[0].subscenes.EV1.steps[0].text);
+			assert.strictEqual(task.concurrentSteps[0].subscenes.EV1.steps[0].text[0], 'Go Outside');
 
 		});
 	});

@@ -8,7 +8,7 @@ const App = require('../app/web/components/App');
  * NOTE: Below is deliberately over-exposing modules for now. This is intended for exploring how
  *       Maestro will be used in browser.
  */
-const maestro = {
+window.maestro = {
 
 	YAML: require('js-yaml'),
 
@@ -45,9 +45,7 @@ const maestro = {
 
 // require('./app/web/ui/timeline');
 
-maestro.app = new maestro.WebProgram();
-
-window.maestro = maestro;
+window.maestro.app = new window.maestro.WebProgram(window.appComponent);
 
 ReactDOM.render(<App />, document.getElementById('root'));
 
@@ -55,4 +53,4 @@ console.log(`     __  ______    _____________________  ____
     /  |/  /   |  / ____/ ___/_  __/ __ \\/ __ \\
    / /|_/ / /| | / __/  \\__ \\ / / / /_/ / / / /
   / /  / / ___ |/ /___ ___/ // / / _, _/ /_/ /
- /_/  /_/_/  |_/_____//____//_/ /_/ |_|\\____/ v${maestro.app.version}`);
+ /_/  /_/_/  |_/_____//____//_/ /_/ |_|\\____/ v${window.maestro.app.version}`);

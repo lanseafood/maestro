@@ -19,7 +19,8 @@ const textareaStyle = {
 class StepComponent extends React.Component {
 
 	state = {
-		editMode: false
+		editMode: false,
+		stepState: false
 	}
 
 	constructor(props) {
@@ -29,6 +30,15 @@ class StepComponent extends React.Component {
 		// this.state.localStepState = this.props.stepState;
 
 		this.editorInput = React.createRef();
+
+		// when Step.reload() is called, run function to update this component state
+		this.unsubscribeReloadFn = this.props.stepState.subscribeReload((newState) => {
+			this.setState({ stepState: newState });
+		});
+	}
+
+	componentWillUnmount() {
+		this.unsubscribeReloadFn();
 	}
 
 	handleEditButtonClick = (e) => {
@@ -43,12 +53,18 @@ class StepComponent extends React.Component {
 		e.preventDefault();
 		e.stopPropagation();
 
-		stateHandler.deleteStep(
-			this.props.activityIndex,
-			this.props.divisionIndex,
-			this.props.primaryColumnKey,
-			this.props.stepIndex
-		);
+		this.props.deleteStepFromSeries(this.props.stepIndex);
+
+		stateHandler.saveChange(stateHandler.state.program,
+			stateHandler.state.procedure, this.props.activityIndex);
+
+		// FIXME remove
+		// stateHandler.deleteStep(
+		// 	this.props.activityIndex,
+		// 	this.props.divisionIndex,
+		// 	this.props.primaryColumnKey,
+		// 	this.props.stepIndex
+		// );
 	}
 
 	getKey() {
@@ -56,6 +72,7 @@ class StepComponent extends React.Component {
 	}
 
 	render() {
+		console.log('rendering StepComponent');
 		return this.state.editMode ?
 			this.renderEditor() :
 			(
@@ -84,7 +101,7 @@ class StepComponent extends React.Component {
 		const options = { level: 0 };
 
 		// was: this.state.localStepState.text
-		const initial = YAML.safeDump(this.props.stepState.raw);
+		const initial = YAML.safeDump(this.props.stepState.props.raw);
 
 		// had: onChange={this.handleEditTextChange}
 		return (
@@ -113,17 +130,22 @@ class StepComponent extends React.Component {
 		e.preventDefault();
 		e.stopPropagation();
 
-		const newRaw = YAML.safeLoad(this.editorInput.current.value);
+		const newDefinition = YAML.safeLoad(this.editorInput.current.value);
 		// const newState = cloneDeep(this.props.stepState);
 		// newState.raw = newRaw;
 
-		stateHandler.modifyStep(
-			this.props.activityIndex,
-			this.props.divisionIndex,
-			this.props.primaryColumnKey,
-			this.props.stepIndex,
-			newRaw
-		);
+		// stateHandler.modifyStep(
+		// this.props.activityIndex,
+		// this.props.divisionIndex,
+		// this.props.primaryColumnKey,
+		// this.props.stepIndex,
+		// newRaw
+		// );
+
+		// update the state with new definition
+		this.props.stepState.reload(newDefinition);
+		stateHandler.saveChange(stateHandler.state.program,
+			stateHandler.state.procedure, this.props.activityIndex);
 
 		this.setState({
 			editMode: false
@@ -154,7 +176,9 @@ StepComponent.propTypes = {
 	activityIndex: PropTypes.number.isRequired,
 	divisionIndex: PropTypes.number.isRequired,
 	primaryColumnKey: PropTypes.string.isRequired,
-	stepIndex: PropTypes.number.isRequired
+	stepIndex: PropTypes.number.isRequired,
+
+	deleteStepFromSeries: PropTypes.func.isRequired
 
 };
 
