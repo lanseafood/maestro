@@ -4,6 +4,7 @@ const uuidv4 = require('uuid/v4');
 
 const maestroKey = require('../helpers/maestroKey');
 
+const Series = require('../../../model/Series');
 const StepComponent = require('./StepComponent');
 const StepFirstDropComponent = require('./StepFirstDropComponent');
 const stateHandler = require('../../state/index');
@@ -52,6 +53,27 @@ class SeriesComponent extends React.Component {
 	}
 
 	handleMoveStep = (from, to) => {
+		console.log('handleMoveStep');
+		console.log('from', from);
+		console.log('to', to);
+		console.log('subscenes', stateHandler.state.procedure
+			.tasks[to.activityIndex]
+			.concurrentSteps[to.divisionIndex]
+			.subscenes);
+
+		// 	this.subscenes[actorInfo.id] = series;
+
+		// const allSeriesInDivision = stateHandler.state.procedure
+		// 	.tasks[to.activityIndex]
+		// 	.concurrentSteps[to.divisionIndex]
+		// 	.subscenes;
+
+		// let destinationSeries;
+		// if (allSeriesInDivision[to.primaryColumnKey]) {
+		// 	destinationSeries = allSeriesInDivision[to.primaryColumnKey];
+		// } else {
+		// 	allSeriesInDivision[to.primaryColumnKey] = new Series();
+		// }
 
 		const destinationSeries = stateHandler.state.procedure
 			.tasks[to.activityIndex]

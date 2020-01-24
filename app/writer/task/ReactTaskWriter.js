@@ -63,13 +63,17 @@ module.exports = class ReactTaskWriter extends TaskWriter {
 
 		for (let c = 0; c < this.numCols; c++) {
 			if (!columns[c]) {
+				// FIXME need a better way to handle this
+				const columnKey = this.task.getColumns()[c];
+				division.addSeries(columnKey);
+
 				columns[c] = {
 					children: [], // FIXME remove these if the stuff below works...
 					content: [],
 					colspan: 1,
 
-					series: new Series(), // FIXME is this right?
-					columnKeys: [this.task.getColumns()[c]] // ['NONE'] // FIXME
+					series: division.subscenes[columnKey],
+					columnKeys: [columnKey] // ['NONE'] // FIXME
 				};
 				columns[c].stateColumnKey = columns[c].columnKeys[0];
 				continue;

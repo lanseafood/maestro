@@ -134,6 +134,8 @@ module.exports = class ConcurrentStep {
 	}
 
 	getDefinition() {
+		// FIXME if a series has no steps in it, it should not be added to def, right?
+
 		const def = {};
 		const numActors = Object.keys(this.subscenes).length;
 		for (const actor in this.subscenes) {
@@ -181,6 +183,18 @@ module.exports = class ConcurrentStep {
 		this.subscenes[actorInfo.id] = series;
 
 	}
+
+	hasSeries(seriesId) {
+		return this.subscenes[seriesId] &&
+			typeof this.subscenes[seriesId] === 'object' &&
+			this.subscenes[seriesId] instanceof Series;
+	}
+
+	addSeries(seriesId) {
+		this.subscenes[seriesId] = new Series();
+	}
+
+	// FIXME add removeSeries() {}
 
 	/**
 	 * Make a Step based upon the context of this concurrentStep

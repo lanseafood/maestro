@@ -103,7 +103,7 @@ class StepComponent extends React.Component {
 		const options = { level: 0 };
 
 		// was: this.state.localStepState.text
-		const initial = YAML.safeDump(this.props.stepState.props.raw);
+		const initial = YAML.safeDump(this.props.stepState.getDefinition());
 
 		// had: onChange={this.handleEditTextChange}
 		return (
