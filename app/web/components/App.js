@@ -183,6 +183,60 @@ class App extends React.Component {
 
 		};
 
+		// const draggedFrom = { activityIndex, divisionIndex, primaryColumnKey, stepIndex };
+		stateHandler.handleMoveStep = (from, to) => {
+
+			const match = (prop) => (from[prop] === to[prop]);
+			const newProc = this.state.procedure;
+
+			const fromList = newProc
+				.tasks[from.activityIndex]
+				.concurrentSteps[from.divisionIndex]
+				.subscenes[from.primaryColumnKey];
+
+			const toList = newProc
+				.tasks[to.activityIndex]
+				.concurrentSteps[to.divisionIndex]
+				.subscenes[to.primaryColumnKey];
+
+			const [step] = fromList.splice(from.stepIndex, 1);
+
+			if (match('activityIndex') && match('divisionIndex') && match('primaryColumnKey')) {
+				// move step indices in array
+
+				const insertIndex = from.stepIndex < to.stepIndex ?
+					to.stepIndex :
+					to.stepIndex + 1;
+
+				toList.splice(insertIndex, 0, step);
+
+			} else {
+				// moving step from one array to another...
+
+				// get the definition of the moving step
+				// const stepDef = fromList[from.stepIndex].getDefinition();
+
+				// delete from original location
+				// fromList.splice(from.stepIndex, 1);
+
+				// const newStep = toDivision.makeStep(to.primaryColumnKey, stepDef);
+
+				toList.splice(to.stepIndex + 1, 0, step);
+
+			}
+
+			recordAndReportChange(newProc);
+
+			saveChange(this.program, newProc, from.activityIndex);
+			if (!match('activityIndex')) {
+				saveChange(this.program, newProc, to.activityIndex);
+			}
+
+			this.setState({
+				procedure: newProc
+			});
+		};
+
 		console.log(`Procedure set to ${procObject.name}`);
 	};
 

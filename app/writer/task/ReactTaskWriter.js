@@ -228,8 +228,6 @@ module.exports = class ReactTaskWriter extends TaskWriter {
 				let elem = stepText[s];
 				if (typeof elem === 'string') {
 					elem = this.textTransform.transform(elem);
-				} else {
-					console.log(elem);
 				}
 				// else { assume it's a react object }
 

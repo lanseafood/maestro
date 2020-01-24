@@ -63,6 +63,14 @@ class StepComponent extends React.Component {
 					stepState={this.props.stepState}
 					columnKeys={this.props.columnKeys}
 					taskWriter={this.props.taskWriter}
+
+					activityIndex={this.props.activityIndex}
+					divisionIndex={this.props.divisionIndex}
+					primaryColumnKey={this.props.primaryColumnKey}
+					stepIndex={this.props.stepIndex}
+
+					handleEditButtonClick={this.handleEditButtonClick}
+					handleDeleteButtonClick={this.handleDeleteButtonClick}
 				/>
 			);
 	}
