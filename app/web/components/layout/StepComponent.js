@@ -88,6 +88,8 @@ class StepComponent extends React.Component {
 
 					handleEditButtonClick={this.handleEditButtonClick}
 					handleDeleteButtonClick={this.handleDeleteButtonClick}
+					handleMoveStep={this.props.handleMoveStep}
+
 				/>
 			);
 	}
@@ -178,8 +180,8 @@ StepComponent.propTypes = {
 	primaryColumnKey: PropTypes.string.isRequired,
 	stepIndex: PropTypes.number.isRequired,
 
-	deleteStepFromSeries: PropTypes.func.isRequired
-
+	deleteStepFromSeries: PropTypes.func.isRequired,
+	handleMoveStep: PropTypes.func.isRequired
 };
 
 module.exports = StepComponent;

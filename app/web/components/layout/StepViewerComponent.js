@@ -3,7 +3,6 @@ const { useDrag, useDrop } = require('react-dnd');
 
 const ItemTypes = require('../../../model/ItemTypes');
 const PropTypes = require('prop-types');
-const stateHandler = require('../../state/index');
 
 const liStyle = {
 	position: 'relative'
@@ -45,7 +44,7 @@ const StepViewerComponent = ({
 
 	activityIndex, divisionIndex, primaryColumnKey, stepIndex,
 
-	handleEditButtonClick, handleDeleteButtonClick
+	handleEditButtonClick, handleDeleteButtonClick, handleMoveStep
 }) => {
 
 	// why does this need to be set here? Is this why actors inappropriately shown in react? FIXME.
@@ -81,7 +80,7 @@ const StepViewerComponent = ({
 			if (monitor.didDrop()) {
 				const droppedAt = monitor.getDropResult();
 				const draggedFrom = getStepPath();
-				stateHandler.handleMoveStep(draggedFrom, droppedAt);
+				handleMoveStep(draggedFrom, droppedAt);
 			}
 		},
 		collect: (monitor) => ({
@@ -148,7 +147,8 @@ StepViewerComponent.propTypes = {
 	stepIndex: PropTypes.number.isRequired,
 
 	handleEditButtonClick: PropTypes.func.isRequired,
-	handleDeleteButtonClick: PropTypes.func.isRequired
+	handleDeleteButtonClick: PropTypes.func.isRequired,
+	handleMoveStep: PropTypes.func.isRequired
 };
 
 module.exports = StepViewerComponent;

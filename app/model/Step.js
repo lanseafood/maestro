@@ -74,6 +74,9 @@ module.exports = class Step {
 	}
 
 	getDefinition() {
+		// FIXME need to output actor if it differs from columnKey
+		// FIXME need to output location
+
 		const def = {};
 
 		for (const prop of props.strings) {

@@ -6,6 +6,7 @@ const maestroKey = require('../helpers/maestroKey');
 
 const StepComponent = require('./StepComponent');
 const StepFirstDropComponent = require('./StepFirstDropComponent');
+const stateHandler = require('../../state/index');
 
 class SeriesComponent extends React.Component {
 
@@ -20,7 +21,9 @@ class SeriesComponent extends React.Component {
 		this.unsubscribeFns = {
 			reload: null,
 			appendStep: null,
-			deleteStep: null
+			deleteStep: null,
+			insertStep: null,
+			transferStep: null
 		};
 
 		for (const seriesModelMethod in this.unsubscribeFns) {
@@ -46,6 +49,20 @@ class SeriesComponent extends React.Component {
 
 	deleteStepFromSeries = (stepIndex) => {
 		this.props.seriesState.deleteStep(stepIndex);
+	}
+
+	handleMoveStep = (from, to) => {
+
+		const destinationSeries = stateHandler.state.procedure
+			.tasks[to.activityIndex]
+			.concurrentSteps[to.divisionIndex]
+			.subscenes[to.primaryColumnKey];
+
+		this.props.seriesState.transferStep(from.stepIndex, destinationSeries, to.stepIndex);
+
+		stateHandler.saveChange(stateHandler.state.program,
+			stateHandler.state.procedure, this.props.activityIndex);
+
 	}
 
 	render() {
@@ -80,6 +97,7 @@ class SeriesComponent extends React.Component {
 								stepIndex={index}
 
 								deleteStepFromSeries={this.deleteStepFromSeries}
+								handleMoveStep={this.handleMoveStep}
 							/>
 						);
 					})}
