@@ -212,10 +212,11 @@ fn initialize(
     stn: &mut STN,
     data: &RegistrationPayload,
     options: &RegistrationOptions,
-) -> Result<(), String> {
-    build_distance_graph(stn, &data, &options)?;
+) -> Result<(usize, usize), String> {
+    let res = build_distance_graph(stn, &data, &options)?;
     perform_apsp(stn)?;
-    set_bounds(stn)
+    set_bounds(stn)?;
+    Ok(res)
 }
 
 /// Commit an as-performed time to the STN. Updates bounds on remaining activities. Errs if the as_performed time creates a conflict
@@ -281,12 +282,16 @@ impl STN {
     }
 
     /// Initialize the STN
-    pub fn initialize(&mut self, payload: &JsValue, options: &JsValue) -> Result<(), JsValue> {
+    pub fn initialize(
+        &mut self,
+        payload: &JsValue,
+        options: &JsValue,
+    ) -> Result<RegistrationEnum, JsValue> {
         let data: RegistrationPayload = payload.into_serde().unwrap();
         let options: RegistrationOptions = options.into_serde().unwrap();
 
         match initialize(self, &data, &options) {
-            Ok(()) => Ok(()),
+            Ok((nodes, edges)) => Ok(RegistrationEnum(nodes, edges)),
             Err(e) => Err(JsValue::from_str(&e)),
         }
     }
@@ -294,33 +299,6 @@ impl STN {
     #[wasm_bindgen(js_name = toString)]
     pub fn to_string(&self) -> String {
         format!("{} elapsed time", self.elapsed_time)
-    }
-
-    /// Register task data as a distance graph. Returns (node count, edge count) tuple
-    #[wasm_bindgen(catch, method, js_name = registerGraph)]
-    pub fn register_graph(
-        &mut self,
-        payload: &JsValue,
-        options: &JsValue,
-    ) -> Result<RegistrationEnum, JsValue> {
-        // TODO: remove wasm
-        let data: RegistrationPayload = payload.into_serde().unwrap();
-        let options: RegistrationOptions = options.into_serde().unwrap();
-
-        match build_distance_graph(self, &data, &options) {
-            Ok(u) => return Ok(RegistrationEnum(u.0, u.1)),
-            Err(e) => return Err(JsValue::from_str(&e)),
-        };
-    }
-
-    /// Perform All Pairs Shortest Paths (Floyd-Warshall) algorithm to calculate inferred constraints.
-    #[wasm_bindgen(catch, method, js_name = performAPSP)]
-    pub fn perform_apsp(&mut self) -> Result<(), JsValue> {
-        // TODO: remove wasm
-        match perform_apsp(self) {
-            Ok(()) => Ok(()),
-            Err(e) => Err(JsValue::from_str(&e)),
-        }
     }
 
     /// Commit an as-performed time and update bounds
@@ -708,7 +686,7 @@ mod tests {
         };
 
         let mut stn = STN::new();
-        match stn.register_graph(&payload, &options) {
+        match stn.initialize(&payload, &options) {
             Ok(u) => assert_eq!(
                 (0_usize, 0_usize),
                 (u.0, u.1),
@@ -744,7 +722,7 @@ mod tests {
             }
         };
 
-        match stn.register_graph(&payload, &options) {
+        match stn.initialize(&payload, &options) {
             Ok(u) => assert_eq!(
                 (2_usize, 4_usize),
                 (u.0, u.1),
