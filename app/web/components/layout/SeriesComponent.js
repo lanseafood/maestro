@@ -4,7 +4,6 @@ const uuidv4 = require('uuid/v4');
 
 const maestroKey = require('../helpers/maestroKey');
 
-const Series = require('../../../model/Series');
 const StepComponent = require('./StepComponent');
 const StepFirstDropComponent = require('./StepFirstDropComponent');
 const stateHandler = require('../../state/index');
@@ -19,7 +18,6 @@ class SeriesComponent extends React.Component {
 		super(props);
 
 		this.unsubscribeFns = {
-			reloadSeries: null,
 			appendStep: null,
 			deleteStep: null,
 			insertStep: null,
@@ -28,7 +26,7 @@ class SeriesComponent extends React.Component {
 
 		for (const seriesModelMethod in this.unsubscribeFns) {
 			this.unsubscribeFns[seriesModelMethod] = this.props.seriesState.subscribe(
-				seriesModelMethod, // reloadSeries, appendStep, etc
+				seriesModelMethod, // transferStep, appendStep, etc
 				(newState) => { // perform this func when the Series method is run
 					this.setState({ seriesState: newState });
 				}

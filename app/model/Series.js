@@ -13,7 +13,6 @@ module.exports = class Series {
 	 */
 	constructor(seriesActors, steps = []) {
 		this.subscriberFns = {
-			reloadSeries: [], // fixme remove reloadSeries. Why would we do that?
 			appendStep: [],
 			deleteStep: [],
 			insertStep: [],
@@ -46,11 +45,6 @@ module.exports = class Series {
 			this.subscriberFns[subscriptionMethod]
 		);
 		return unsubscribeFn;
-	}
-
-	reloadSeries(newSteps = []) {
-		this.doConstruct(newSteps);
-		subscriptionHelper.run(this.subscriberFns.reload, this);
 	}
 
 	/**
