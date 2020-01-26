@@ -3,6 +3,7 @@ const { useDrag, useDrop } = require('react-dnd');
 
 const ItemTypes = require('../../../model/ItemTypes');
 const PropTypes = require('prop-types');
+const StepDropLocationComponent = require('./StepDropLocationComponent');
 
 const liStyle = {
 	position: 'relative'
@@ -87,54 +88,21 @@ const StepViewerComponent = ({
 		})
 	});
 
-	const [{ isOver, canDrop }, drop] = useDrop({
-		accept: ItemTypes.STEP,
-		canDrop: (item, monitor) => {
-			const dragItem = monitor.getItem(); // .getItem() modified in useDrag.begin() above
-			const thisDropItem = getStepPath();
-			return !seriesPathsMatch(dragItem, thisDropItem) ||
-				(dragItem.stepIndex !== thisDropItem.stepIndex && dragItem.stepIndex !== thisDropItem.stepIndex - 1);
-		},
+	const canDropBeforeStep = (item, monitor) => {
+		const dragItem = monitor.getItem(); // .getItem() modified in useDrag.begin() above
+		const thisDropItem = getStepPath();
+		return !seriesPathsMatch(dragItem, thisDropItem) ||
+			(
+				dragItem.stepIndex !== thisDropItem.stepIndex &&
+				dragItem.stepIndex !== thisDropItem.stepIndex - 1
+			);
+	};
 
-		// returns step path for use in useDrag.end()
-		drop: () => {
-			const dropAt = getStepPath();
-			dropAt.stepIndex--; // getStepPath gets the index of the step. Drop one index earlier.
-			return dropAt;
-		},
-		collect: (monitor) => ({
-			isOver: !!monitor.isOver(),
-			canDrop: !!monitor.canDrop()
-			// dropContextDraggingItem: monitor.getItem()
-		})
-	});
-
-	const opacity = isOver ? 0.6 : 0.2;
-	let backgroundColor,
-		display = 'none';
-
-	if (canDrop) {
-		display = 'block';
-		backgroundColor = 'green'; // was #dddddd
-	}
-
-	// FIXME write a feature request issue for this
-	// Would like to do this, but not working since display=none initially so not possible to be
-	// over it. Need to start with display=none because otherwise these dropzones get in the way
-	// of grabbing the dropables (since they overlap)
-	// else if (isOver) { // <-- this is !canDrop && isOver
-	// }
-	// if there is currently an item being dragged
-	// } else if (dropContextDraggingItem) {
-	// 	backgroundColor = 'red';
-	// 	display = 'block';
-	// }
-
-	// const backgroundColor = canDrop ?
-	// 	(isOver ? 'green' : 'green') : // was #dddddd
-	// 	(isOver ? 'red' : 'black');
-
-	// const display = (backgroundColor === 'black') ? 'none' : 'block';
+	const dropOccurredBeforeStep = () => {
+		const dropAt = getStepPath();
+		dropAt.stepIndex--; // getStepPath gets the index of the step. Drop one index earlier.
+		return dropAt;
+	};
 
 	return (
 		<li
@@ -147,17 +115,10 @@ const StepViewerComponent = ({
 		>
 			{renderButtons(handleEditButtonClick, handleDeleteButtonClick)}
 			{taskWriter.insertStep(stepState)}
-			<div
-				ref={drop}
-				style={{
-					position: 'absolute',
-					height: '20px',
-					width: '100%',
-					top: '-12px',
-					backgroundColor,
-					display,
-					opacity
-				}}
+			<StepDropLocationComponent
+				canDropFn={canDropBeforeStep}
+				dropFn={dropOccurredBeforeStep}
+				position='top'
 			/>
 		</li>
 	);

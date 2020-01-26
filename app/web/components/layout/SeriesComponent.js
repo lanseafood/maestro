@@ -5,8 +5,17 @@ const uuidv4 = require('uuid/v4');
 const maestroKey = require('../helpers/maestroKey');
 
 const StepComponent = require('./StepComponent');
-const StepFirstDropComponent = require('./StepFirstDropComponent');
+const StepDropLocationComponent = require('./StepDropLocationComponent');
 const stateHandler = require('../../state/index');
+
+const seriesPathsMatch = (path1, path2) => {
+	const match = (prop) => (path1[prop] === path2[prop]);
+	return (
+		match('activityIndex') &&
+		match('divisionIndex') &&
+		match('primaryColumnKey')
+	);
+};
 
 class SeriesComponent extends React.Component {
 
@@ -34,6 +43,14 @@ class SeriesComponent extends React.Component {
 		}
 
 	}
+
+	getSeriesPath = () => {
+		return {
+			activityIndex: this.props.activityIndex,
+			divisionIndex: this.props.divisionIndex,
+			primaryColumnKey: this.props.primaryColumnKey
+		};
+	};
 
 	componentWillUnmount() {
 		for (const seriesModelMethod of this.unsubscribeFns) {
@@ -64,6 +81,23 @@ class SeriesComponent extends React.Component {
 		stateHandler.saveChange(stateHandler.state.program,
 			stateHandler.state.procedure, this.props.activityIndex);
 
+	}
+
+	canDropAtEndOfSeries = (item, monitor) => {
+		const dragItem = monitor.getItem(); // .getItem() modified in useDrag.begin() above
+		const dropSeriesPath = this.getSeriesPath();
+
+		// if the activity-->division-->series are the same, only return true if the dragged
+		// item isn't the last item (can't stick it after itself)
+		return seriesPathsMatch(dragItem, dropSeriesPath) ?
+			(dragItem.stepIndex !== this.props.seriesState.steps.length - 1) :
+			true;
+
+	}
+
+	dropOccurredAtEndOfSeries = () => {
+		const dropLocation = { ...this.getSeriesPath(), stepIndex: false };
+		return dropLocation;
 	}
 
 	render() {
@@ -101,12 +135,10 @@ class SeriesComponent extends React.Component {
 							);
 						})}
 					</ol>
-					<StepFirstDropComponent
-						seriesState={this.props.seriesState}
-
-						activityIndex={this.props.activityIndex}
-						divisionIndex={this.props.divisionIndex}
-						primaryColumnKey={this.props.primaryColumnKey}
+					<StepDropLocationComponent
+						canDropFn={this.canDropAtEndOfSeries}
+						dropFn={this.dropOccurredAtEndOfSeries}
+						position='bottom'
 					/>
 				</div>
 			</td>
