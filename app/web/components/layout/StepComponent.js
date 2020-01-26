@@ -58,13 +58,6 @@ class StepComponent extends React.Component {
 		stateHandler.saveChange(stateHandler.state.program,
 			stateHandler.state.procedure, this.props.activityIndex);
 
-		// FIXME remove
-		// stateHandler.deleteStep(
-		// 	this.props.activityIndex,
-		// 	this.props.divisionIndex,
-		// 	this.props.primaryColumnKey,
-		// 	this.props.stepIndex
-		// );
 	}
 
 	getKey() {
@@ -93,10 +86,6 @@ class StepComponent extends React.Component {
 				/>
 			);
 	}
-
-	// was renderViewer
-
-	// was renderButton
 
 	renderEditor() {
 

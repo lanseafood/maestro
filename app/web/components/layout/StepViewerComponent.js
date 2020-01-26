@@ -1,5 +1,5 @@
 const React = require('react');
-const { useDrag, useDrop } = require('react-dnd');
+const { useDrag } = require('react-dnd');
 
 const ItemTypes = require('../../../model/ItemTypes');
 const PropTypes = require('prop-types');
