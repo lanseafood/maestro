@@ -56,13 +56,12 @@ const StepViewerComponent = ({
 		return { activityIndex, divisionIndex, primaryColumnKey, stepIndex };
 	};
 
-	const stepPathsMatch = (path1, path2) => {
+	const seriesPathsMatch = (path1, path2) => {
 		const match = (prop) => (path1[prop] === path2[prop]);
 		return (
 			match('activityIndex') &&
 			match('divisionIndex') &&
-			match('primaryColumnKey') &&
-			match('stepIndex')
+			match('primaryColumnKey')
 		);
 	};
 
@@ -93,22 +92,49 @@ const StepViewerComponent = ({
 		canDrop: (item, monitor) => {
 			const dragItem = monitor.getItem(); // .getItem() modified in useDrag.begin() above
 			const thisDropItem = getStepPath();
-			return !stepPathsMatch(dragItem, thisDropItem);
+			return !seriesPathsMatch(dragItem, thisDropItem) ||
+				(dragItem.stepIndex !== thisDropItem.stepIndex && dragItem.stepIndex !== thisDropItem.stepIndex - 1);
 		},
 
 		// returns step path for use in useDrag.end()
 		drop: () => {
-			return getStepPath();
+			const dropAt = getStepPath();
+			dropAt.stepIndex--; // getStepPath gets the index of the step. Drop one index earlier.
+			return dropAt;
 		},
 		collect: (monitor) => ({
 			isOver: !!monitor.isOver(),
 			canDrop: !!monitor.canDrop()
+			// dropContextDraggingItem: monitor.getItem()
 		})
 	});
 
-	const backgroundColor = canDrop ?
-		(isOver ? 'green' : 'green') : // was #dddddd
-		(isOver ? 'red' : 'transparent');
+	const opacity = isOver ? 0.6 : 0.2;
+	let backgroundColor,
+		display = 'none';
+
+	if (canDrop) {
+		display = 'block';
+		backgroundColor = 'green'; // was #dddddd
+	}
+
+	// FIXME write a feature request issue for this
+	// Would like to do this, but not working since display=none initially so not possible to be
+	// over it. Need to start with display=none because otherwise these dropzones get in the way
+	// of grabbing the dropables (since they overlap)
+	// else if (isOver) { // <-- this is !canDrop && isOver
+	// }
+	// if there is currently an item being dragged
+	// } else if (dropContextDraggingItem) {
+	// 	backgroundColor = 'red';
+	// 	display = 'block';
+	// }
+
+	// const backgroundColor = canDrop ?
+	// 	(isOver ? 'green' : 'green') : // was #dddddd
+	// 	(isOver ? 'red' : 'black');
+
+	// const display = (backgroundColor === 'black') ? 'none' : 'block';
 
 	return (
 		<li
@@ -120,18 +146,19 @@ const StepViewerComponent = ({
 			ref={drag}
 		>
 			{renderButtons(handleEditButtonClick, handleDeleteButtonClick)}
+			{taskWriter.insertStep(stepState)}
 			<div
 				ref={drop}
 				style={{
 					position: 'absolute',
 					height: '20px',
 					width: '100%',
-					bottom: '-10px',
+					top: '-12px',
 					backgroundColor,
-					opacity: isOver ? 0.6 : 0.2
+					display,
+					opacity
 				}}
 			/>
-			{taskWriter.insertStep(stepState)}
 		</li>
 	);
 };

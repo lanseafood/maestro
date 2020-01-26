@@ -52,6 +52,13 @@ class SeriesComponent extends React.Component {
 			.concurrentSteps[to.divisionIndex]
 			.subscenes[to.primaryColumnKey];
 
+		// for the end-of-series drop location, which is not attached to a StepComponent but instead
+		// attached to the bottom of the SeriesComponent, there will not be a stepIndex. Instead it
+		// will explicitly define the stepIndex as false. Set it to the end of the Series.
+		if (to.stepIndex === false) {
+			to.stepIndex = this.props.seriesState.steps.length;
+		}
+
 		this.props.seriesState.transferStep(from.stepIndex, destinationSeries, to.stepIndex);
 
 		stateHandler.saveChange(stateHandler.state.program,
@@ -64,38 +71,44 @@ class SeriesComponent extends React.Component {
 
 		return (
 			<td key={uuidv4()} colSpan={this.props.colspan}>
-				<StepFirstDropComponent
-					activityIndex={this.props.activityIndex}
-					divisionIndex={this.props.divisionIndex}
-					primaryColumnKey={this.props.primaryColumnKey}
-				/>
-				<ol>
-					{/* FIXME start={startStep} removed from <ol> above -- need to fix step nums */}
-					{this.props.seriesState.steps.map((step, index) => {
-						const key = maestroKey.getKey(
-							this.props.activityIndex,
-							this.props.divisionIndex,
-							this.props.primaryColumnKey,
-							index
-						);
-						return (
-							<StepComponent
-								key={key}
-								stepState={step}
-								columnKeys={this.props.columnKeys}
-								taskWriter={this.props.taskWriter}
+				<div style={{ position: 'relative' }}>
+					<ol>
+						{/*
+						FIXME start={startStep} removed from <ol> above -- need to fix step nums
+						*/}
+						{this.props.seriesState.steps.map((step, index) => {
+							const key = maestroKey.getKey(
+								this.props.activityIndex,
+								this.props.divisionIndex,
+								this.props.primaryColumnKey,
+								index
+							);
+							return (
+								<StepComponent
+									key={key}
+									stepState={step}
+									columnKeys={this.props.columnKeys}
+									taskWriter={this.props.taskWriter}
 
-								activityIndex={this.props.activityIndex}
-								divisionIndex={this.props.divisionIndex}
-								primaryColumnKey={this.props.primaryColumnKey}
-								stepIndex={index}
+									activityIndex={this.props.activityIndex}
+									divisionIndex={this.props.divisionIndex}
+									primaryColumnKey={this.props.primaryColumnKey}
+									stepIndex={index}
 
-								deleteStepFromSeries={this.deleteStepFromSeries}
-								handleMoveStep={this.handleMoveStep}
-							/>
-						);
-					})}
-				</ol>
+									deleteStepFromSeries={this.deleteStepFromSeries}
+									handleMoveStep={this.handleMoveStep}
+								/>
+							);
+						})}
+					</ol>
+					<StepFirstDropComponent
+						seriesState={this.props.seriesState}
+
+						activityIndex={this.props.activityIndex}
+						divisionIndex={this.props.divisionIndex}
+						primaryColumnKey={this.props.primaryColumnKey}
+					/>
+				</div>
 			</td>
 		);
 	}

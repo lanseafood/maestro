@@ -6,7 +6,8 @@ const PropTypes = require('prop-types');
 
 // FIXME this whole file has lots of duplication with StepViewerComponent
 
-const StepFirstDropComponent = ({ activityIndex, divisionIndex, primaryColumnKey }) => {
+const StepFirstDropComponent = ({
+	seriesState, activityIndex, divisionIndex, primaryColumnKey }) => {
 
 	const getSeriesPath = () => {
 		return { activityIndex, divisionIndex, primaryColumnKey };
@@ -29,11 +30,13 @@ const StepFirstDropComponent = ({ activityIndex, divisionIndex, primaryColumnKey
 			const dropSeriesPath = getSeriesPath();
 
 			// if the activity-->division-->series are the same, only return true if the dragged
-			// item isn't the first item (can't stick it before itself)
-			return seriesPathsMatch(dragItem, dropSeriesPath) ? (dragItem.stepIndex > 0) : true;
+			// item isn't the last item (can't stick it after itself)
+			return seriesPathsMatch(dragItem, dropSeriesPath) ?
+				(dragItem.stepIndex !== seriesState.steps.length - 1) :
+				true;
 		},
 		drop: () => {
-			const dropLocation = { ...getSeriesPath(), stepIndex: -1 };
+			const dropLocation = { ...getSeriesPath(), stepIndex: false };
 			return dropLocation;
 		},
 		collect: (monitor) => ({
@@ -43,35 +46,34 @@ const StepFirstDropComponent = ({ activityIndex, divisionIndex, primaryColumnKey
 	});
 
 	// FIXME DUPLICATED
-	const backgroundColor = canDrop ?
-		(isOver ? 'green' : 'green') : // was #dddddd
-		(isOver ? 'red' : 'transparent');
+	const opacity = isOver ? 0.6 : 0.2;
+	let backgroundColor,
+		display = 'none';
+
+	if (canDrop) {
+		display = 'block';
+		backgroundColor = 'green'; // was #dddddd
+	}
 
 	return (
 		<div
 			ref={drop}
 			style={{
-				// position: 'absolute',
-				marginBottom: '-20px',
+				position: 'absolute',
 				height: '20px',
 				width: '100%',
-				top: '-10px'
+				bottom: '0px',
+				backgroundColor,
+				display,
+				opacity
 			}}
-		>
-			<div
-				style={{
-					backgroundColor,
-					opacity: isOver ? 0.6 : 0.2,
-					height: '100%',
-					width: '100%',
-					margin: '5px 0'
-				}}
-			/>
-		</div>
+		/>
 	);
 };
 
 StepFirstDropComponent.propTypes = {
+	seriesState: PropTypes.object.isRequired,
+
 	activityIndex: PropTypes.number.isRequired,
 	divisionIndex: PropTypes.number.isRequired,
 	primaryColumnKey: PropTypes.string.isRequired

@@ -150,6 +150,8 @@ class App extends React.Component {
 		});
 
 		// const draggedFrom = { activityIndex, divisionIndex, primaryColumnKey, stepIndex };
+		/*
+		FIXME REMOVE
 		stateHandler.handleMoveStep = (from, to) => {
 
 			const match = (prop) => (from[prop] === to[prop]);
@@ -193,7 +195,7 @@ class App extends React.Component {
 			this.setState({
 				procedure: newProc
 			});
-		};
+		};*/
 
 		console.log(`Procedure set to ${procObject.name}`);
 	};
