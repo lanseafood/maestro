@@ -5,14 +5,21 @@ const subscriptionHelper = require('../helpers/subscriptionHelper');
 
 module.exports = class Series {
 
-	constructor(steps) {
+	/**
+	 *
+	 * @param {Array} seriesActors - Array in form ['EV1'] for a single actor or
+	 *                               ['EV1 + EV2', 'EV1', 'EV2'] for a joint actor Series.
+	 * @param {Array} steps          Optional array of Step objects
+	 */
+	constructor(seriesActors, steps = []) {
 		this.subscriberFns = {
-			reload: [],
+			reloadSeries: [], // fixme remove reloadSeries. Why would we do that?
 			appendStep: [],
 			deleteStep: [],
 			insertStep: [],
 			transferStep: []
 		};
+		this.seriesActors = seriesActors;
 		this.doConstruct(steps);
 	}
 
@@ -21,8 +28,6 @@ module.exports = class Series {
 	}
 
 	getDefinition() {
-		// FIXME remove
-		// throw new Error('not available yet - below is extracted from ConcurrentStep but Concurrent Step is not yet updated');
 		const def = [];
 		for (const step of this.steps) {
 			def.push(step.getDefinition());
@@ -43,7 +48,7 @@ module.exports = class Series {
 		return unsubscribeFn;
 	}
 
-	reload(newSteps = []) {
+	reloadSeries(newSteps = []) {
 		this.doConstruct(newSteps);
 		subscriptionHelper.run(this.subscriberFns.reload, this);
 	}
@@ -69,9 +74,7 @@ module.exports = class Series {
 
 	insertStep(insertIndex, step) {
 		console.log('Series.insertStep');
-		console.log(this);
 		this.steps.splice(insertIndex, 0, step);
-		console.log(this);
 		subscriptionHelper.run(this.subscriberFns.insertStep, this);
 	}
 
@@ -90,68 +93,21 @@ module.exports = class Series {
 
 		} else {
 			console.log('transferring step from one series to another');
+
+			// step was previously in another series which had different actors. Reset.
+			stepToTransfer.setActors(destinationSeries.seriesActors);
+
 			// transferring step from this Series to another Series
 			destinationSeries.insertStep(insertIndex + 1, stepToTransfer);
+
+			console.log(this);
+			console.log(destinationSeries);
+
 		}
 
 		// FIXME is this right name? or should this be registered as an deleteStep? Or both?
 		subscriptionHelper.run(this.subscriberFns.transferStep, this);
 
-	}
-
-	moveStep(from, to) {
-
-		const match = (prop) => (from[prop] === to[prop]);
-		const newProc = this.state.procedure;
-
-		const fromList = newProc
-			.tasks[from.activityIndex]
-			.concurrentSteps[from.divisionIndex]
-			.subscenes[from.primaryColumnKey].steps;
-
-		const toList = newProc
-			.tasks[to.activityIndex]
-			.concurrentSteps[to.divisionIndex]
-			.subscenes[to.primaryColumnKey].steps;
-
-		const [step] = fromList.splice(from.stepIndex, 1);
-
-		if (match('activityIndex') && match('divisionIndex') && match('primaryColumnKey')) {
-			// move step indices in array
-
-			const insertIndex = from.stepIndex < to.stepIndex ?
-				to.stepIndex :
-				to.stepIndex + 1;
-
-			toList.splice(insertIndex, 0, step);
-
-		} else {
-			// moving step from one array to another...
-
-			// get the definition of the moving step
-			// const stepDef = fromList[from.stepIndex].getDefinition();
-
-			// delete from original location
-			// fromList.splice(from.stepIndex, 1);
-
-			// const newStep = toDivision.makeStep(to.primaryColumnKey, stepDef);
-
-			toList.splice(to.stepIndex + 1, 0, step);
-
-		}
-
-		stateHandler.recordAndReportChange(newProc);
-
-		stateHandler.saveChange(this.program, newProc, from.activityIndex);
-		// saveChange(this.program, newProc, from.activityIndex);
-		if (!match('activityIndex')) {
-			stateHandler.saveChange(this.program, newProc, to.activityIndex);
-			// saveChange(this.program, newProc, to.activityIndex);
-		}
-
-		this.setState({
-			procedure: newProc
-		});
 	}
 
 	/**

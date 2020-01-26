@@ -17,6 +17,14 @@ const props = {
 
 module.exports = class Step {
 
+	/**
+	 *
+	 * @param {Object} stepYaml            Object with anything that can be within a step, like:
+	 *                                     { text: "Things!", title: "Stuff!", checkboxes: [], ... }
+	 * @param {string|Array} actorIdOrIds  Actor ID like 'EV1' or array of multiple actor IDs, with
+	 *                                     their joint identifier first: ['EV1 + EV2', 'EV1, 'EV2']
+	 * @param {Array} taskRoles
+	 */
 	constructor(stepYaml, actorIdOrIds, taskRoles) {
 		this.reloadSubscriberFns = []; // these can't be wiped out...FIXME keep pondering this
 		this.doConstruct(stepYaml, actorIdOrIds, taskRoles);
@@ -45,14 +53,17 @@ module.exports = class Step {
 		this.props.modules = [];
 		this.props.substeps = [];
 
-		this.props.raw = null;
-		this.props.taskRolesMap = {};
-		this.props.taskRoles = taskRoles;
+		this.props.raw = null; // FIXME pretty much sure not used anywhere. Remove. UniqueEWCVDS
 
-		this.props.actorIdOrIds = actorIdOrIds;
+		// this needs to be re-run if a step is moved between activities
+		this.mapTaskRolesToActor(taskRoles); // sets this.props.taskRoles & this.props.taskRolesMap
 
-		this.mapTaskRolesToActor(taskRoles);
-		this.setActors(stepYaml.actor ? stepYaml.actor : actorIdOrIds);
+		// this needs to be re-run if a step is moved between actors/roles/columns
+		this.setActors(
+			actorIdOrIds,
+			stepYaml.actor // often undefined
+		);
+
 		this.populateFromYaml(stepYaml);
 	}
 
@@ -74,7 +85,6 @@ module.exports = class Step {
 	}
 
 	getDefinition() {
-		// FIXME need to output actor if it differs from columnKey
 		// FIXME need to output location
 
 		const def = {};
@@ -118,6 +128,10 @@ module.exports = class Step {
 			def.duration = durationDef;
 		}
 
+		if (this.props.definitionActor) {
+			def.actor = this.props.definitionActor;
+		}
+
 		return def;
 	}
 
@@ -137,7 +151,7 @@ module.exports = class Step {
 
 	populateFromYaml(stepYaml) {
 
-		this.props.raw = stepYaml;
+		this.props.raw = stepYaml; // FIXME pretty much sure not used anywhere. Remove. UniqueEWCVDS
 
 		// Check if the step is a simple string
 		if (typeof stepYaml === 'string') {
@@ -225,7 +239,9 @@ module.exports = class Step {
 	 * create function replaceTaskRoles(text) to allow changing text like
 	 * "{{role:crewB}}" into "EV1" if taskRolesMap['crewB'] === 'EV1'
 	 *
-	 * @param  {Object} taskRoles object of TaskRole objects. Example:
+	 * FIXME this seems excessive to do on every step
+	 *
+	 * @param  {Object} taskRoles  -  object of TaskRole objects. Example:
 	 *                    taskRoles === {
 	 *                      crewA: TaskRole{
 	 *                        name: 'crewA',
@@ -254,8 +270,24 @@ module.exports = class Step {
 		return text;
 	}
 
-	setActors(actorIdOrIds) {
-		this.props.actors = arrayHelper.parseArray(actorIdOrIds);
+	setActors(actorIdOrIds = false, definitionActor = null) {
+
+		// if no new value provided, don't change this.props.actorIdOrIds to a falsy value
+		if (actorIdOrIds) {
+			this.props.actorIdOrIds = arrayHelper.parseArray(actorIdOrIds);
+		}
+
+		// similarly to actorIdOrIds, if no new value is provided this.props.definitionActor can be
+		// left as it is. However, definitionActor is often undefined. Most steps do not explicitly
+		// define who the actor  is. Instead, it's inferred from the Series the Step is within. If
+		// it is explicitly defined, set it here.
+		if (definitionActor) {
+			this.props.definitionActor = definitionActor;
+		}
+
+		this.props.actors = arrayHelper.parseArray(
+			this.props.definitionActor ? this.props.definitionActor : this.props.actorIdOrIds
+		);
 	}
 
 	/**

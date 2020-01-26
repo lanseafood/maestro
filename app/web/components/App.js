@@ -149,51 +149,6 @@ class App extends React.Component {
 			procedureWriter: new ReactProcedureWriter(window.maestro.app, procObject)
 		});
 
-		/* FIXME remove
-		stateHandler.modifyStep = (actIndex, divIndex, colKey, stepIndex, rawDefinition) => {
-
-			// previously cloned-deep this because I thought I might need to. Doesn't seem necessary
-			// at this point but keeping this here for a while to make sure.
-			// const newProc = cloneDeep(this.state.procedure);
-			const newProc = this.state.procedure;
-
-			const division = newProc.tasks[actIndex].concurrentSteps[divIndex];
-			const newStep = division.makeStep(colKey, rawDefinition);
-
-			division.subscenes[colKey].steps[stepIndex] = newStep;
-
-			recordAndReportChange(newProc);
-
-			stateHandler.saveChange(this.program, newProc, actIndex);
-			// saveChange(this.program, newProc, actIndex);
-
-			this.setState({
-				procedure: newProc
-			});
-
-		};
-		*/
-
-		/*
-		stateHandler.deleteStep = (actIndex, divIndex, colKey, stepIndex) => {
-
-			const newProc = this.state.procedure;
-
-			newProc.tasks[actIndex].concurrentSteps[divIndex].subscenes[colKey].steps
-				.splice(stepIndex, 1);
-
-			stateHandler.recordAndReportChange(newProc);
-
-			stateHandler.saveChange(this.program, newProc, actIndex);
-			// saveChange(this.program, newProc, actIndex);
-
-			this.setState({
-				procedure: newProc
-			});
-
-		};
-		*/
-
 		// const draggedFrom = { activityIndex, divisionIndex, primaryColumnKey, stepIndex };
 		stateHandler.handleMoveStep = (from, to) => {
 
@@ -222,16 +177,6 @@ class App extends React.Component {
 				toList.splice(insertIndex, 0, step);
 
 			} else {
-				// moving step from one array to another...
-
-				// get the definition of the moving step
-				// const stepDef = fromList[from.stepIndex].getDefinition();
-
-				// delete from original location
-				// fromList.splice(from.stepIndex, 1);
-
-				// const newStep = toDivision.makeStep(to.primaryColumnKey, stepDef);
-
 				toList.splice(to.stepIndex + 1, 0, step);
 
 			}

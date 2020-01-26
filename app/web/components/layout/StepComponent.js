@@ -133,16 +133,6 @@ class StepComponent extends React.Component {
 		e.stopPropagation();
 
 		const newDefinition = YAML.safeLoad(this.editorInput.current.value);
-		// const newState = cloneDeep(this.props.stepState);
-		// newState.raw = newRaw;
-
-		// stateHandler.modifyStep(
-		// this.props.activityIndex,
-		// this.props.divisionIndex,
-		// this.props.primaryColumnKey,
-		// this.props.stepIndex,
-		// newRaw
-		// );
 
 		// update the state with new definition
 		this.props.stepState.reload(newDefinition);

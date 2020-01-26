@@ -134,17 +134,14 @@ module.exports = class ConcurrentStep {
 	}
 
 	getDefinition() {
-		// FIXME if a series has no steps in it, it should not be added to def, right?
-
 		const def = {};
-		const numActors = Object.keys(this.subscenes).length;
 		for (const actor in this.subscenes) {
-			def[actor] = this.subscenes[actor].getDefinition();
-			// FIXME delete
-			// for (const step of this.subscenes[actor].steps) {
-			// def[actor].push(step.getDefinition());
-			// }
+			const seriesDef = this.subscenes[actor].getDefinition();
+			if (Array.isArray(seriesDef) && seriesDef.length > 0) {
+				def[actor] = seriesDef;
+			}
 		}
+		const numActors = Object.keys(def).length;
 		if (numActors > 1) {
 			return { simo: def };
 		}
@@ -158,10 +155,10 @@ module.exports = class ConcurrentStep {
 			concurrentStepYaml.simo[actorIdGuess] :
 			concurrentStepYaml[actorIdGuess];
 
-		// Initiate the array of steps for the actor
-		const series = new Series();
-
 		const actorInfo = getActorInfo(actorIdGuess, this.taskRoles);
+
+		// Initiate the array of steps for the actor
+		const series = new Series(actorInfo.idOrIds);
 
 		if (typeof actorStepsDefinition === 'string') {
 			series.appendStep(this.makeStep(actorIdGuess, actorStepsDefinition));
@@ -190,8 +187,13 @@ module.exports = class ConcurrentStep {
 			this.subscenes[seriesId] instanceof Series;
 	}
 
-	addSeries(seriesId) {
-		this.subscenes[seriesId] = new Series();
+	/**
+	 * 
+	 * @param {string} seriesKey - The key in the Division.subscenes object pointing to the Series
+	 */
+	addSeries(seriesKey) {
+		const actorInfo = getActorInfo(seriesKey, this.taskRoles);
+		this.subscenes[seriesKey] = new Series(actorInfo.idOrIds);
 	}
 
 	// FIXME add removeSeries() {}

@@ -58,7 +58,7 @@ module.exports = class ApfrInstall extends StepModule {
 		super();
 		this.key = 'apfr.install';
 		this.step = step;
-		this.raw = stepYaml;
+		this.raw = stepYaml; // FIXME pretty much confirmed not used anywhere. Remove. UniqueEWCVDS
 
 		// todo also accept torque/speed/etc separately (e.g. accept an obj instead of string)
 		const settingsString = stepYaml[this.key].settings;

@@ -18,9 +18,8 @@ class SeriesComponent extends React.Component {
 	constructor(props) {
 		super(props);
 
-		// const fnNames = ['reload', 'appendStep', 'deleteStep'];
 		this.unsubscribeFns = {
-			reload: null,
+			reloadSeries: null,
 			appendStep: null,
 			deleteStep: null,
 			insertStep: null,
@@ -29,17 +28,13 @@ class SeriesComponent extends React.Component {
 
 		for (const seriesModelMethod in this.unsubscribeFns) {
 			this.unsubscribeFns[seriesModelMethod] = this.props.seriesState.subscribe(
-				seriesModelMethod, // reload, appendStep, etc
+				seriesModelMethod, // reloadSeries, appendStep, etc
 				(newState) => { // perform this func when the Series method is run
 					this.setState({ seriesState: newState });
 				}
 			);
 		}
-		// FIXME remove
-		// // when Series.reload() is called, run function to update this component state
-		// this.unsubscribeReloadFn = this.props.seriesState.subscribe('reload', (newState) => {
-		// 	this.setState({ seriesState: newState });
-		// });
+
 	}
 
 	componentWillUnmount() {
@@ -53,27 +48,6 @@ class SeriesComponent extends React.Component {
 	}
 
 	handleMoveStep = (from, to) => {
-		console.log('handleMoveStep');
-		console.log('from', from);
-		console.log('to', to);
-		console.log('subscenes', stateHandler.state.procedure
-			.tasks[to.activityIndex]
-			.concurrentSteps[to.divisionIndex]
-			.subscenes);
-
-		// 	this.subscenes[actorInfo.id] = series;
-
-		// const allSeriesInDivision = stateHandler.state.procedure
-		// 	.tasks[to.activityIndex]
-		// 	.concurrentSteps[to.divisionIndex]
-		// 	.subscenes;
-
-		// let destinationSeries;
-		// if (allSeriesInDivision[to.primaryColumnKey]) {
-		// 	destinationSeries = allSeriesInDivision[to.primaryColumnKey];
-		// } else {
-		// 	allSeriesInDivision[to.primaryColumnKey] = new Series();
-		// }
 
 		const destinationSeries = stateHandler.state.procedure
 			.tasks[to.activityIndex]
