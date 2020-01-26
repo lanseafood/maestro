@@ -1,4 +1,4 @@
-<Step stepId="{{stepId|default("")}}">
+<Step stepId="{{stepNumber|default("")}}">
     <StepTitle>
     <LocationInfo>
         {% if actorText %} <CrewMember> <Text>{{actorText}}</Text> </CrewMember> {% endif %}

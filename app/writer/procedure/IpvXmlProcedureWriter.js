@@ -22,6 +22,18 @@ module.exports = class IpvXmlProcedureWriter extends ProcedureWriter {
 		this.lastLocation = false;
 	}
 
+	gitDateToIpvDate(gitDate) {
+		const dateObj = new Date(gitDate);
+		const localString = dateObj.toLocaleString(
+			'en',
+			{ month: 'short', year: 'numeric', day: '2-digit' }
+		);
+		const month = localString.substring(0, 3).toUpperCase();
+		const day = localString.substring(4, 6);
+		const year = localString.substring(10, 12);
+		return `${day} ${month} ${year}`;
+	}
+
 	renderIntro() {
 		this.content += nunjucks.render('ipv-xml/procedure-header.xml', {
 			name: this.procedure.name.replace('&', '&amp;'),
@@ -36,7 +48,7 @@ module.exports = class IpvXmlProcedureWriter extends ProcedureWriter {
 			duration: this.procedure.duration,
 			crewRequired: this.procedure.crewRequired,
 			referencedProcedures: this.procedure.referencedProcedures,
-			date: this.program.getGitDate()
+			date: this.gitDateToIpvDate(this.program.getGitDate())
 		});
 	}
 
