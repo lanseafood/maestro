@@ -9,9 +9,10 @@ module.exports = class Series {
 	 *
 	 * @param {Array} seriesActors - Array in form ['EV1'] for a single actor or
 	 *                               ['EV1 + EV2', 'EV1', 'EV2'] for a joint actor Series.
+	 * @param {Array} taskRoles
 	 * @param {Array} steps          Optional array of Step objects
 	 */
-	constructor(seriesActors, steps = []) {
+	constructor(seriesActors, taskRoles, steps = []) {
 		this.subscriberFns = {
 			appendStep: [],
 			deleteStep: [],
@@ -19,6 +20,7 @@ module.exports = class Series {
 			transferStep: []
 		};
 		this.seriesActors = seriesActors;
+		this.taskRoles = taskRoles;
 		this.doConstruct(steps);
 	}
 
@@ -105,15 +107,12 @@ module.exports = class Series {
 	}
 
 	/**
-	 * Make a Step based upon the context of this concurrentStep
-	 * @param {string}         actorIdGuess
+	 * Make a Step based upon the context of this Series
 	 * @param {Object|string}  stepDefinition
 	 * @return {Step}          Resulting step object
 	 */
-	// FIXME should this be here rather than in ConcurrentStep ???
-	// makeStep(actorIdGuess, stepDefinition) {
-	// 	const actorInfo = getActorInfo(actorIdGuess, this.taskRoles);
-	// 	return new Step(stepDefinition, actorInfo.idOrIds, this.taskRoles);
-	// }
+	makeStep(stepDefinition = {}) {
+		return new Step(stepDefinition, this.seriesActors, this.taskRoles);
+	}
 
 };

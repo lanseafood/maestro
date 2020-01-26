@@ -62,6 +62,10 @@ class SeriesComponent extends React.Component {
 		this.props.seriesState.deleteStep(stepIndex);
 	}
 
+	insertStepIntoSeries = (stepIndex) => {
+		this.props.seriesState.insertStep(stepIndex, this.props.seriesState.makeStep());
+	}
+
 	handleMoveStep = (from, to) => {
 
 		const destinationSeries = stateHandler.state.procedure
@@ -131,6 +135,7 @@ class SeriesComponent extends React.Component {
 
 									deleteStepFromSeries={this.deleteStepFromSeries}
 									handleMoveStep={this.handleMoveStep}
+									insertStepIntoSeries={this.insertStepIntoSeries}
 								/>
 							);
 						})}

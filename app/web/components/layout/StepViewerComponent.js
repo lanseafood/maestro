@@ -19,9 +19,10 @@ const editButtonsContainerStyle = {
 /**
  * @param {Function} editFn    Function to be run when clicking edit button
  * @param {Function} deleteFn  Function to be run when clicking delete button
+ * @param {Function} insertStepAfter
  * @return {Object}            React component
  */
-function renderButtons(editFn, deleteFn) {
+function renderButtons(editFn, deleteFn, insertStepAfter) {
 	return (
 		<div style={editButtonsContainerStyle} className='modify-step-button-container'>
 			<button
@@ -36,6 +37,12 @@ function renderButtons(editFn, deleteFn) {
 			>
 				delete
 			</button>
+			<button
+				onClick={insertStepAfter}
+				className='insert-step-after-button'
+			>
+				insert step after
+			</button>
 		</div>
 	);
 }
@@ -45,7 +52,7 @@ const StepViewerComponent = ({
 
 	activityIndex, divisionIndex, primaryColumnKey, stepIndex,
 
-	handleEditButtonClick, handleDeleteButtonClick, handleMoveStep
+	handleEditButtonClick, handleDeleteButtonClick, handleMoveStep, handleInsertStepAfter
 }) => {
 
 	// why does this need to be set here? Is this why actors inappropriately shown in react? FIXME.
@@ -113,7 +120,7 @@ const StepViewerComponent = ({
 			className={`li-level-${options.level} step-component`}
 			ref={drag}
 		>
-			{renderButtons(handleEditButtonClick, handleDeleteButtonClick)}
+			{renderButtons(handleEditButtonClick, handleDeleteButtonClick, handleInsertStepAfter)}
 			{taskWriter.insertStep(stepState)}
 			<StepDropLocationComponent
 				canDropFn={canDropBeforeStep}
@@ -136,6 +143,7 @@ StepViewerComponent.propTypes = {
 
 	handleEditButtonClick: PropTypes.func.isRequired,
 	handleDeleteButtonClick: PropTypes.func.isRequired,
+	handleInsertStepAfter: PropTypes.func.isRequired,
 	handleMoveStep: PropTypes.func.isRequired
 };
 
