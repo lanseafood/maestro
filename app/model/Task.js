@@ -126,7 +126,8 @@ module.exports = class Task {
 	constructor(taskRequirementsDef, procedure) {
 		this.subscriberFns = {
 			deleteDivision: [],
-			insertDivision: []
+			insertDivision: [],
+			appendDivision: []
 		};
 
 		this.title = '';
@@ -203,11 +204,17 @@ module.exports = class Task {
 		}
 		this.concurrentSteps.splice(divisionIndex, 0, division);
 		this.divisionUuidToObj[division.uuid] = division;
-		console.log('more from Activity.insertDivision', {
-			divisionUuidToObj: this.divisionUuidToObj,
-			'subscriberFns.insertDivision': this.subscriberFns.insertDivision
-		});
 		subscriptionHelper.run(this.subscriberFns.insertDivision, this);
+	}
+
+	appendDivision(division = null) {
+		console.log('Activity.appendDivision');
+		if (!division) {
+			division = new ConcurrentStep(this.getEmptyDivisionDefinition(), this.rolesDict);
+		}
+		this.concurrentSteps.push(division);
+		this.divisionUuidToObj[division.uuid] = division;
+		subscriptionHelper.run(this.subscriberFns.appendDivision, this);
 	}
 
 	/**

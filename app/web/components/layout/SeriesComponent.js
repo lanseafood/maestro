@@ -6,6 +6,7 @@ const maestroKey = require('../helpers/maestroKey');
 
 const StepComponent = require('./StepComponent');
 const StepDropLocationComponent = require('./StepDropLocationComponent');
+const InsertStepButtonComponent = require('./InsertStepButtonComponent');
 const stateHandler = require('../../state/index');
 
 const seriesPathsMatch = (path1, path2) => {
@@ -161,6 +162,15 @@ class SeriesComponent extends React.Component {
 							);
 						})}
 					</ol>
+					{/* <div style={{ textAlign: 'right' }}> */}
+					<InsertStepButtonComponent
+						buttonText='insert step'
+						activityUuid={this.props.activityUuid}
+						divisionUuid={this.props.divisionUuid}
+						primaryColumnKey={this.props.primaryColumnKey}
+						stepIndex={-1}
+					/>
+					{/* </div> */}
 					<StepDropLocationComponent
 						canDropFn={this.canDropAtEndOfSeries}
 						dropFn={this.dropOccurredAtEndOfSeries}

@@ -2,6 +2,7 @@ const React = require('react');
 const PropTypes = require('prop-types');
 const ReactTaskWriter = require('../../../writer/task/ReactTaskWriter');
 const stateHandler = require('../../state/index');
+const DivisionControlsComponent = require('./DivisionControlsComponent');
 
 class DivisionComponent extends React.PureComponent {
 
@@ -23,10 +24,18 @@ class DivisionComponent extends React.PureComponent {
 		const divisionIndex = activity.getDivisionIndexByUuid(this.props.divisionUuid);
 		const division = activity.concurrentSteps[divisionIndex];
 
-		return this.taskWriter.writeDivision(
-			division,
-			this.props.activityUuid,
-			this.props.divisionUuid
+		return (
+			<React.Fragment>
+				<DivisionControlsComponent
+					activityUuid={this.props.activityUuid}
+					divisionUuid={division.uuid}
+				/>
+				{this.taskWriter.writeDivision(
+					division,
+					this.props.activityUuid,
+					this.props.divisionUuid
+				)}
+			</React.Fragment>
 		);
 	}
 

@@ -52,6 +52,24 @@ class DivisionControlsComponent extends React.PureComponent {
 			stateHandler.state.procedure, activityIndex);
 	}
 
+	// Fixme maybe this functionality should be broken out into another component?
+	handleAppendButtonClick = (e) => {
+		console.log('append-division button click');
+		e.preventDefault();
+		e.stopPropagation();
+
+		const activityIndex = stateHandler.state.procedure
+			.TasksHandler.getTaskIndexByUuid(this.props.activityUuid);
+
+		// this.props.insertDivision(divisionIndex);
+		const activity = stateHandler.state.procedure.tasks[activityIndex];
+		activity.appendDivision();
+
+		// FIXME: in stateHandler, make saveChange not need the first two inputs
+		stateHandler.saveChange(stateHandler.state.program,
+			stateHandler.state.procedure, activityIndex);
+	}
+
 	render() {
 
 		const trTdStyle = {
@@ -91,18 +109,33 @@ class DivisionControlsComponent extends React.PureComponent {
 					<div style={wrapperStyle}>
 						<div style={contentDiv} className='division-controls'>
 							<div style={controlsStyle} className='modify-division-container'>
-								<button
-									onClick={this.handleDeleteButtonClick}
-									className='delete-button'
-								>
-									delete
-								</button>
-								<button
-									onClick={this.handleInsertButtonClick}
-									className='insert-step-after-button'
-								>
-									insert division
-								</button>
+								{ this.props.divisionUuid !== 'last' ?
+									(
+										<React.Fragment>
+											<button
+												onClick={this.handleDeleteButtonClick}
+												className='delete-button'
+											>
+												delete sync block
+											</button>
+											<button
+												onClick={this.handleInsertButtonClick}
+												className='insert-division-button'
+											>
+												insert sync block
+											</button>
+										</React.Fragment>
+									) :
+									(
+										<button
+											onClick={this.handleAppendButtonClick}
+											className='insert-division-button'
+										>
+											insert sync block at END
+										</button>
+									)
+								}
+
 							</div>
 
 						</div>

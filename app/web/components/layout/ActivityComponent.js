@@ -21,7 +21,8 @@ class ActivityComponent extends React.Component {
 
 		this.unsubscribeFns = {
 			deleteDivision: null,
-			insertDivision: null
+			insertDivision: null,
+			appendDivision: null
 		};
 
 	}
@@ -97,27 +98,23 @@ class ActivityComponent extends React.Component {
 								<React.Fragment
 									key={maestroKey.getKey(this.props.activityUuid, index) + '-wrapper'}
 								>
-									<DivisionControlsComponent
-										// activityIndex={this.props.activityIndex}
+									{/* <DivisionControlsComponent
 										activityUuid={this.props.activityUuid}
-										// divisionIndex={index}
 										divisionUuid={division.uuid}
-										// deleteDivision={this.deleteDivision}
-										// insertDivision={this.insertDivision}
-									/>
+										canDelete={true}
+									/> */}
 									<DivisionComponent
 										key={maestroKey.getKey(this.props.activityUuid, index)}
-										// procedure={stateHandler.state.procedure}
-										// activity={activity}
-										// activityIndex={this.props.activityIndex}
 										activityUuid={this.props.activityUuid}
-										// division={division}
-										// divisionIndex={index}
 										divisionUuid={division.uuid}
 									/>
 								</React.Fragment>
 							);
 						})}
+						<DivisionControlsComponent
+							activityUuid={this.props.activityUuid}
+							divisionUuid='last'
+						/>
 					</tbody>
 				</table>
 			</div>

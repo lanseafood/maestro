@@ -53,10 +53,10 @@ module.exports = class Series {
 	 *
 	 * @param {Step} step  Step model to push to this Series
 	 */
-	appendStep(step) {
+	appendStep(step = false) {
 		console.log('Series.appendStep');
-		if (!(step instanceof Step)) {
-			throw new Error('step must be instance of Step');
+		if (!step) {
+			step = this.makeStep();
 		}
 		this.steps.push(step);
 		subscriptionHelper.run(this.subscriberFns.appendStep, this);
@@ -68,8 +68,11 @@ module.exports = class Series {
 		subscriptionHelper.run(this.subscriberFns.deleteStep, this);
 	}
 
-	insertStep(insertIndex, step) {
+	insertStep(insertIndex, step = false) {
 		console.log('Series.insertStep');
+		if (!step) {
+			step = this.makeStep();
+		}
 		this.steps.splice(insertIndex, 0, step);
 		subscriptionHelper.run(this.subscriberFns.insertStep, this);
 	}

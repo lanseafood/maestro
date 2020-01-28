@@ -4,6 +4,7 @@ const { useDrag } = require('react-dnd');
 const ItemTypes = require('../../../model/ItemTypes');
 const PropTypes = require('prop-types');
 const StepDropLocationComponent = require('./StepDropLocationComponent');
+const InsertStepButtonComponent = require('./InsertStepButtonComponent');
 // const stateHandler = require('../../state/index');
 
 const liStyle = {
@@ -23,7 +24,7 @@ const editButtonsContainerStyle = {
  * @param {Function} insertStepBefore
  * @return {Object}            React component
  */
-function renderButtons(editFn, deleteFn, insertStepBefore) {
+function renderButtons(editFn, deleteFn, activityUuid, divisionUuid, primaryColumnKey, stepIndex) {
 	return (
 		<div style={editButtonsContainerStyle} className='modify-step-button-container'>
 			<button
@@ -38,12 +39,19 @@ function renderButtons(editFn, deleteFn, insertStepBefore) {
 			>
 				delete
 			</button>
-			<button
+			<InsertStepButtonComponent
+				buttonText='insert step before'
+				activityUuid={activityUuid}
+				divisionUuid={divisionUuid}
+				primaryColumnKey={primaryColumnKey}
+				stepIndex={stepIndex}
+			/>
+			{/* <button
 				onClick={insertStepBefore}
 				className='insert-step-before-button'
 			>
 				insert step before
-			</button>
+			</button> */}
 		</div>
 	);
 }
@@ -121,7 +129,9 @@ const StepViewerComponent = ({
 			className={`li-level-${options.level} step-component`}
 			ref={drag}
 		>
-			{renderButtons(handleEditButtonClick, handleDeleteButtonClick, handleInsertStepBefore)}
+			{renderButtons(
+				handleEditButtonClick, handleDeleteButtonClick,
+				activityUuid, divisionUuid, primaryColumnKey, stepIndex)}
 			{taskWriter.insertStep(stepState)}
 			<StepDropLocationComponent
 				canDropFn={canDropBeforeStep}
