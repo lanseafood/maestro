@@ -51,7 +51,7 @@ function renderButtons(editFn, deleteFn, insertStepBefore) {
 const StepViewerComponent = ({
 	stepState, columnKeys, taskWriter,
 
-	activityUuid, divisionIndex, primaryColumnKey, stepIndex,
+	activityUuid, divisionUuid, primaryColumnKey, stepIndex,
 
 	handleEditButtonClick, handleDeleteButtonClick, handleMoveStep, handleInsertStepBefore
 }) => {
@@ -62,14 +62,14 @@ const StepViewerComponent = ({
 	const options = { level: 0 };
 
 	const getStepPath = () => {
-		return { activityUuid, divisionIndex, primaryColumnKey, stepIndex };
+		return { activityUuid, divisionUuid, primaryColumnKey, stepIndex };
 	};
 
 	const seriesPathsMatch = (path1, path2) => {
 		const match = (prop) => (path1[prop] === path2[prop]);
 		return (
 			match('activityIndex') &&
-			match('divisionIndex') &&
+			match('divisionUuid') &&
 			match('primaryColumnKey')
 		);
 	};
@@ -139,7 +139,8 @@ StepViewerComponent.propTypes = {
 
 	// activityIndex: PropTypes.number.isRequired,
 	activityUuid: PropTypes.string.isRequired,
-	divisionIndex: PropTypes.number.isRequired,
+	// divisionIndex: PropTypes.number.isRequired,
+	divisionUuid: PropTypes.string.isRequired,
 	primaryColumnKey: PropTypes.string.isRequired,
 	stepIndex: PropTypes.number.isRequired,
 

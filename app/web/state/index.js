@@ -58,7 +58,8 @@ function recordAndReportChange(latestProcedure) {
 
 	changesDiffs.push(diffText);
 
-	console.log(diffText, ...css);
+	// FIXME reenable this!
+	// console.log(diffText, ...css);
 	setState({ lastProcDefinitionYaml: newYaml });
 
 }
@@ -123,9 +124,6 @@ function saveChangeWeb(program, activity, yamlString) {
  */
 function saveChange(program, procedure, activityIndex) {
 	const activity = state.procedure.tasks[activityIndex];
-	console.log(`saving activity index ${activityIndex}`); // FIXME remove when done with TSing
-	console.log('procedure', procedure);
-	console.log('activity', activity);
 	const yamlString = YAML.dump(activity.getTaskDefinition());
 
 	if (window.isElectron) {

@@ -17,12 +17,17 @@ class ActivityComponent extends React.Component {
 
 	constructor(props) {
 		super(props);
+		console.log('Constructing ActivityComponent');
 
 		this.unsubscribeFns = {
 			deleteDivision: null,
 			insertDivision: null
 		};
 
+	}
+
+	// Fixme this probably can stay in constructor...
+	componentDidMount() {
 		const activity = stateHandler.state.procedure.getTaskByUuid(this.props.activityUuid);
 
 		for (const activityModelMethod in this.unsubscribeFns) {
@@ -30,6 +35,7 @@ class ActivityComponent extends React.Component {
 				activityModelMethod, // insertDivision, deleteDivision, etc
 				(newState) => { // perform this func when the Activity method is run
 					console.log(`Running subscribed method for Task.${activityModelMethod}`);
+					console.log(newState);
 					this.setState({ activityState: newState });
 				}
 			);
@@ -63,20 +69,10 @@ class ActivityComponent extends React.Component {
 		));
 	}
 
-	deleteDivision = (divisionIndex) => {
-		const activity = stateHandler.state.procedure.getTaskByUuid(this.props.activityUuid);
-		activity.deleteDivision(divisionIndex);
-	}
-
-	insertDivision = (divisionIndex) => {
-		const activity = stateHandler.state.procedure.getTaskByUuid(this.props.activityUuid);
-		activity.insertDivision(divisionIndex);
-	}
-
 	render() {
 		const activity = stateHandler.state.procedure.getTaskByUuid(this.props.activityUuid);
 
-		// console.log(`rendering activity ${this.props.activityIndex}`);
+		console.log(`rendering activity ${this.props.activityUuid}`);
 		const procWriter = stateHandler.state.procedureWriter;
 		return (
 			<div className='activityWrapper'>
@@ -104,9 +100,10 @@ class ActivityComponent extends React.Component {
 									<DivisionControlsComponent
 										// activityIndex={this.props.activityIndex}
 										activityUuid={this.props.activityUuid}
-										divisionIndex={index}
-										deleteDivision={this.deleteDivision}
-										insertDivision={this.insertDivision}
+										// divisionIndex={index}
+										divisionUuid={division.uuid}
+										// deleteDivision={this.deleteDivision}
+										// insertDivision={this.insertDivision}
 									/>
 									<DivisionComponent
 										key={maestroKey.getKey(this.props.activityUuid, index)}
@@ -114,8 +111,9 @@ class ActivityComponent extends React.Component {
 										// activity={activity}
 										// activityIndex={this.props.activityIndex}
 										activityUuid={this.props.activityUuid}
-										division={division}
-										divisionIndex={index}
+										// division={division}
+										// divisionIndex={index}
+										divisionUuid={division.uuid}
 									/>
 								</React.Fragment>
 							);

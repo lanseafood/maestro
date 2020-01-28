@@ -80,7 +80,7 @@ class StepComponent extends React.Component {
 
 	// FIXME isn't this in separete maestroKey.js file now?
 	getKey() {
-		return `act${this.props.activityUuid}-div${this.props.divisionIndex}-${this.props.primaryColumnKey}-step${this.props.stepIndex}`;
+		return `act${this.props.activityUuid}-div${this.props.divisionUuid}-${this.props.primaryColumnKey}-step${this.props.stepIndex}`;
 	}
 
 	render() {
@@ -98,7 +98,8 @@ class StepComponent extends React.Component {
 
 					// activityIndex={this.props.activityIndex}
 					activityUuid={this.props.activityUuid}
-					divisionIndex={this.props.divisionIndex}
+					// divisionIndex={this.props.divisionIndex}
+					divisionUuid={this.props.divisionUuid}
 					primaryColumnKey={this.props.primaryColumnKey}
 					stepIndex={this.props.stepIndex}
 
@@ -188,7 +189,8 @@ StepComponent.propTypes = {
 
 	// activityIndex: PropTypes.number.isRequired,
 	activityUuid: PropTypes.string.isRequired,
-	divisionIndex: PropTypes.number.isRequired,
+	// divisionIndex: PropTypes.number.isRequired,
+	divisionUuid: PropTypes.string.isRequired,
 	primaryColumnKey: PropTypes.string.isRequired,
 	stepIndex: PropTypes.number.isRequired,
 

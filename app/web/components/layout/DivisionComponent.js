@@ -3,11 +3,12 @@ const PropTypes = require('prop-types');
 const ReactTaskWriter = require('../../../writer/task/ReactTaskWriter');
 const stateHandler = require('../../state/index');
 
-class DivisionComponent extends React.Component {
+class DivisionComponent extends React.PureComponent {
 
 	constructor(props) {
 		super(props);
 		const activity = stateHandler.state.procedure.getTaskByUuid(this.props.activityUuid);
+		console.log('constructing DivisionComponent');
 
 		this.taskWriter = new ReactTaskWriter(
 			activity,
@@ -16,12 +17,16 @@ class DivisionComponent extends React.Component {
 	}
 
 	render() {
-		// console.log(`rendering division ${this.props.divisionIndex}`);
+		console.log(`rendering division ${this.props.divisionUuid}`);
+
+		const activity = stateHandler.state.procedure.getTaskByUuid(this.props.activityUuid);
+		const divisionIndex = activity.getDivisionIndexByUuid(this.props.divisionUuid);
+		const division = activity.concurrentSteps[divisionIndex];
 
 		return this.taskWriter.writeDivision(
-			this.props.division,
+			division,
 			this.props.activityUuid,
-			this.props.divisionIndex
+			this.props.divisionUuid
 		);
 	}
 
@@ -34,8 +39,9 @@ DivisionComponent.propTypes = {
 	// activityIndex: PropTypes.number.isRequired,
 
 	activityUuid: PropTypes.string.isRequired,
-	division: PropTypes.object.isRequired,
-	divisionIndex: PropTypes.number.isRequired
+	// division: PropTypes.object.isRequired,
+	// divisionIndex: PropTypes.number.isRequired
+	divisionUuid: PropTypes.string.isRequired
 };
 
 module.exports = DivisionComponent;

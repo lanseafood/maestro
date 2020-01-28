@@ -131,7 +131,9 @@ module.exports = class Task {
 
 		this.title = '';
 
-		this.uuid = uuidv4();
+		this.uuid = uuidv4(); // used by Procedure/TasksHandler to find this Task
+
+		this.divisionUuidToObj = {}; // used by Task to find Divisions
 
 		// Why "requirements"? See TaskRequirements
 		this.taskReqs = new TaskRequirements(taskRequirementsDef, this);
@@ -189,7 +191,8 @@ module.exports = class Task {
 
 	deleteDivision(divisionIndex) {
 		console.log(`Activity.deleteDivision, index = ${divisionIndex}`);
-		this.concurrentSteps.splice(divisionIndex, 1);
+		const removedDivision = this.concurrentSteps.splice(divisionIndex, 1);
+		this.divisionUuidToObj[removedDivision.uuid] = null;
 		subscriptionHelper.run(this.subscriberFns.deleteDivision, this);
 	}
 
@@ -199,6 +202,11 @@ module.exports = class Task {
 			division = new ConcurrentStep(this.getEmptyDivisionDefinition(), this.rolesDict);
 		}
 		this.concurrentSteps.splice(divisionIndex, 0, division);
+		this.divisionUuidToObj[division.uuid] = division;
+		console.log('more from Activity.insertDivision', {
+			divisionUuidToObj: this.divisionUuidToObj,
+			'subscriberFns.insertDivision': this.subscriberFns.insertDivision
+		});
 		subscriptionHelper.run(this.subscriberFns.insertDivision, this);
 	}
 
@@ -251,7 +259,9 @@ module.exports = class Task {
 
 		// Get the steps.  ConcurrentSteps class will handle the simo vs actor stuff in the yaml.
 		for (var concurrentStepYaml of taskDef.steps) {
-			this.concurrentSteps.push(new ConcurrentStep(concurrentStepYaml, this.rolesDict));
+			const division = new ConcurrentStep(concurrentStepYaml, this.rolesDict);
+			this.divisionUuidToObj[division.uuid] = division;
+			this.concurrentSteps.push(division);
 		}
 
 	}
@@ -372,6 +382,23 @@ module.exports = class Task {
 	setDurationForRole(actor, time) {
 		doTimeUpdate(this, actor, 'duration', time, 'endTime');
 		return this;
+	}
+
+	getDivisionIndexByUuid(uuid) {
+		for (let i = 0; i < this.concurrentSteps.length; i++) {
+			if (this.concurrentSteps[i].uuid === uuid) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	getDivisionByUuid(uuid) {
+		const index = this.getDivisionIndexByUuid(uuid);
+		if (index === -1 || index > this.concurrentSteps.length - 1) {
+			throw new Error(`Division with uuid ${uuid} not found`);
+		}
+		return this.concurrentSteps[index];
 	}
 
 };

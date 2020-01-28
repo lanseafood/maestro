@@ -3,7 +3,7 @@ const PropTypes = require('prop-types');
 
 const stateHandler = require('../../state/index');
 
-class DivisionControlsComponent extends React.Component {
+class DivisionControlsComponent extends React.PureComponent {
 
 	constructor(props) {
 		super(props);
@@ -14,10 +14,18 @@ class DivisionControlsComponent extends React.Component {
 		e.preventDefault();
 		e.stopPropagation();
 
-		this.props.deleteDivision(this.props.divisionIndex);
-
 		const activityIndex = stateHandler.state.procedure
 			.TasksHandler.getTaskIndexByUuid(this.props.activityUuid);
+
+		const divisionIndex = stateHandler.state.procedure.tasks[activityIndex]
+			.getDivisionIndexByUuid(this.props.divisionUuid);
+
+		// this.props.deleteDivision(divisionIndex);
+		const activity = stateHandler.state.procedure.tasks[activityIndex];
+		console.log(`deleting division index ${divisionIndex}`);
+		console.log(activity.concurrentSteps[divisionIndex]);
+
+		activity.deleteDivision(divisionIndex);
 
 		// FIXME: in stateHandler, make saveChange not need the first two inputs
 		stateHandler.saveChange(stateHandler.state.program,
@@ -29,10 +37,15 @@ class DivisionControlsComponent extends React.Component {
 		e.preventDefault();
 		e.stopPropagation();
 
-		this.props.insertDivision(this.props.divisionIndex);
-
 		const activityIndex = stateHandler.state.procedure
 			.TasksHandler.getTaskIndexByUuid(this.props.activityUuid);
+
+		const divisionIndex = stateHandler.state.procedure.tasks[activityIndex]
+			.getDivisionIndexByUuid(this.props.divisionUuid);
+
+		// this.props.insertDivision(divisionIndex);
+		const activity = stateHandler.state.procedure.tasks[activityIndex];
+		activity.insertDivision(divisionIndex);
 
 		// FIXME: in stateHandler, make saveChange not need the first two inputs
 		stateHandler.saveChange(stateHandler.state.program,
@@ -104,9 +117,10 @@ class DivisionControlsComponent extends React.Component {
 DivisionControlsComponent.propTypes = {
 	// activityIndex: PropTypes.number.isRequired,
 	activityUuid: PropTypes.string.isRequired,
-	divisionIndex: PropTypes.number.isRequired,
-	deleteDivision: PropTypes.func.isRequired,
-	insertDivision: PropTypes.func.isRequired
+	// divisionIndex: PropTypes.number.isRequired,
+	divisionUuid: PropTypes.string.isRequired
+	// deleteDivision: PropTypes.func.isRequired,
+	// insertDivision: PropTypes.func.isRequired
 };
 
 module.exports = DivisionControlsComponent;
