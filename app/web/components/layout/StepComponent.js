@@ -55,29 +55,36 @@ class StepComponent extends React.Component {
 
 		this.props.deleteStepFromSeries(this.props.stepIndex);
 
+		const activityIndex = stateHandler.state.procedure
+			.TasksHandler.getTaskIndexByUuid(this.props.activityUuid);
+
 		stateHandler.saveChange(stateHandler.state.program,
-			stateHandler.state.procedure, this.props.activityIndex);
+			stateHandler.state.procedure, activityIndex);
 
 	}
 
-	handleInsertStepAfter = (e) => {
-		console.log('insert step after button click');
+	handleInsertStepBefore = (e) => {
+		console.log('insert-step-before button click');
 		e.preventDefault();
 		e.stopPropagation();
 
-		this.props.insertStepIntoSeries(this.props.stepIndex + 1, );
+		this.props.insertStepIntoSeries(this.props.stepIndex);
+
+		const activityIndex = stateHandler.state.procedure
+			.TasksHandler.getTaskIndexByUuid(this.props.activityUuid);
 
 		stateHandler.saveChange(stateHandler.state.program,
-			stateHandler.state.procedure, this.props.activityIndex);
+			stateHandler.state.procedure, activityIndex);
 
 	}
 
+	// FIXME isn't this in separete maestroKey.js file now?
 	getKey() {
-		return `act${this.props.activityIndex}-div${this.props.divisionIndex}-${this.props.primaryColumnKey}-step${this.props.stepIndex}`;
+		return `act${this.props.activityUuid}-div${this.props.divisionIndex}-${this.props.primaryColumnKey}-step${this.props.stepIndex}`;
 	}
 
 	render() {
-		console.log('rendering StepComponent');
+		// console.log(`rendering StepComponent ${this.props.stepIndex}`);
 
 		const emptyDefinition = Object.keys(this.props.stepState.getDefinition()).length === 0;
 
@@ -89,14 +96,15 @@ class StepComponent extends React.Component {
 					columnKeys={this.props.columnKeys}
 					taskWriter={this.props.taskWriter}
 
-					activityIndex={this.props.activityIndex}
+					// activityIndex={this.props.activityIndex}
+					activityUuid={this.props.activityUuid}
 					divisionIndex={this.props.divisionIndex}
 					primaryColumnKey={this.props.primaryColumnKey}
 					stepIndex={this.props.stepIndex}
 
 					handleEditButtonClick={this.handleEditButtonClick}
 					handleDeleteButtonClick={this.handleDeleteButtonClick}
-					handleInsertStepAfter={this.handleInsertStepAfter}
+					handleInsertStepBefore={this.handleInsertStepBefore}
 					handleMoveStep={this.props.handleMoveStep}
 
 				/>
@@ -145,8 +153,12 @@ class StepComponent extends React.Component {
 
 		// update the state with new definition
 		this.props.stepState.reload(newDefinition);
+
+		const activityIndex = stateHandler.state.procedure
+			.TasksHandler.getTaskIndexByUuid(this.props.activityUuid);
+
 		stateHandler.saveChange(stateHandler.state.program,
-			stateHandler.state.procedure, this.props.activityIndex);
+			stateHandler.state.procedure, activityIndex);
 
 		this.setState({
 			editMode: false
@@ -174,7 +186,8 @@ StepComponent.propTypes = {
 	columnKeys: PropTypes.array.isRequired,
 	taskWriter: PropTypes.object.isRequired,
 
-	activityIndex: PropTypes.number.isRequired,
+	// activityIndex: PropTypes.number.isRequired,
+	activityUuid: PropTypes.string.isRequired,
 	divisionIndex: PropTypes.number.isRequired,
 	primaryColumnKey: PropTypes.string.isRequired,
 	stepIndex: PropTypes.number.isRequired,

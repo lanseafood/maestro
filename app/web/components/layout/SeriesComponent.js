@@ -11,7 +11,7 @@ const stateHandler = require('../../state/index');
 const seriesPathsMatch = (path1, path2) => {
 	const match = (prop) => (path1[prop] === path2[prop]);
 	return (
-		match('activityIndex') &&
+		match('activityUuid') &&
 		match('divisionIndex') &&
 		match('primaryColumnKey')
 	);
@@ -26,6 +26,13 @@ class SeriesComponent extends React.Component {
 	constructor(props) {
 		super(props);
 
+		console.log('constructing series component', this.props);
+
+		// FIXME get this from Series, or better yet from someplace centralized. So either:
+		//   a) this.unsubscribeFns = Series.getUnsubscribeFns()
+		//   b) In Series: subscriptionHelper.registerSubscriptionFns('Series', [list, of, fns])
+		//      In SeriesComponent:
+		//           this.unsubscribeFns = subscriptionHelper.getUnsubscribeFns('Series')
 		this.unsubscribeFns = {
 			appendStep: null,
 			deleteStep: null,
@@ -37,6 +44,7 @@ class SeriesComponent extends React.Component {
 			this.unsubscribeFns[seriesModelMethod] = this.props.seriesState.subscribe(
 				seriesModelMethod, // transferStep, appendStep, etc
 				(newState) => { // perform this func when the Series method is run
+					console.log(`Running subscribed Fn for Series.${seriesModelMethod}`);
 					this.setState({ seriesState: newState });
 				}
 			);
@@ -46,14 +54,15 @@ class SeriesComponent extends React.Component {
 
 	getSeriesPath = () => {
 		return {
-			activityIndex: this.props.activityIndex,
+			// activityIndex: this.props.activityIndex,
+			activityUuid: this.props.activityUuid,
 			divisionIndex: this.props.divisionIndex,
 			primaryColumnKey: this.props.primaryColumnKey
 		};
 	};
 
 	componentWillUnmount() {
-		for (const seriesModelMethod of this.unsubscribeFns) {
+		for (const seriesModelMethod in this.unsubscribeFns) {
 			this.unsubscribeFns[seriesModelMethod](); // run each unsubscribe function
 		}
 	}
@@ -69,7 +78,8 @@ class SeriesComponent extends React.Component {
 	handleMoveStep = (from, to) => {
 
 		const destinationSeries = stateHandler.state.procedure
-			.tasks[to.activityIndex]
+			// .tasks[to.activityIndex]
+			.getTaskByUuid(to.activityUuid)
 			.concurrentSteps[to.divisionIndex]
 			.subscenes[to.primaryColumnKey];
 
@@ -82,8 +92,11 @@ class SeriesComponent extends React.Component {
 
 		this.props.seriesState.transferStep(from.stepIndex, destinationSeries, to.stepIndex);
 
+		const activityIndex = stateHandler.state.procedure
+			.TasksHandler.getTaskIndexByUuid(this.props.activityUuid);
+
 		stateHandler.saveChange(stateHandler.state.program,
-			stateHandler.state.procedure, this.props.activityIndex);
+			stateHandler.state.procedure, activityIndex);
 
 	}
 
@@ -107,6 +120,8 @@ class SeriesComponent extends React.Component {
 	render() {
 		// const startStep = this.props.taskWriter.preInsertSteps();
 
+		// console.log(`rendering series with colKeys = ${this.props.columnKeys}`);
+
 		return (
 			<td key={uuidv4()} colSpan={this.props.colspan}>
 				<div style={{ position: 'relative' }}>
@@ -116,7 +131,7 @@ class SeriesComponent extends React.Component {
 						*/}
 						{this.props.seriesState.steps.map((step, index) => {
 							const key = maestroKey.getKey(
-								this.props.activityIndex,
+								this.props.activityUuid,
 								this.props.divisionIndex,
 								this.props.primaryColumnKey,
 								index
@@ -128,7 +143,8 @@ class SeriesComponent extends React.Component {
 									columnKeys={this.props.columnKeys}
 									taskWriter={this.props.taskWriter}
 
-									activityIndex={this.props.activityIndex}
+									// activityIndex={this.props.activityIndex}
+									activityUuid={this.props.activityUuid}
 									divisionIndex={this.props.divisionIndex}
 									primaryColumnKey={this.props.primaryColumnKey}
 									stepIndex={index}
@@ -160,7 +176,8 @@ SeriesComponent.propTypes = {
 	seriesState: PropTypes.object.isRequired,
 	taskWriter: PropTypes.object.isRequired,
 
-	activityIndex: PropTypes.number.isRequired,
+	// activityIndex: PropTypes.number.isRequired,
+	activityUuid: PropTypes.string.isRequired,
 	divisionIndex: PropTypes.number.isRequired,
 	primaryColumnKey: PropTypes.string.isRequired
 };

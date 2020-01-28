@@ -3,6 +3,8 @@ const PropTypes = require('prop-types');
 const { DndProvider } = require('react-dnd');
 const Backend = require('react-dnd-html5-backend').default;
 
+const stateHandler = require('../../state/index');
+
 // const ActivitySelectorMenu = require('./../layout/ActivitySelectorMenu');
 const ActivityComponent = require('../layout/ActivityComponent');
 class ProcedureViewerComponent extends React.Component {
@@ -13,15 +15,16 @@ class ProcedureViewerComponent extends React.Component {
 		return (
 			<React.Fragment>
 				<DndProvider backend={Backend}>
-					{this.props.procedure.tasks.map((task, index) => (
-						<ActivityComponent
-							key={task.filename}
-							activity={task}
-							activityIndex={index}
-							procedure={this.props.procedure}
-							getProcedureWriter={this.props.getProcedureWriter}
-						/>
-					))}
+					{stateHandler.state.procedure.tasks.map((task) => {
+						return (
+							<ActivityComponent
+								key={task.uuid}
+								// activity={task}
+								activityUuid={task.uuid}
+								// procedure={stateHandler.state.procedure}
+							/>
+						);
+					})}
 				</DndProvider>
 			</React.Fragment>
 		);
@@ -30,8 +33,7 @@ class ProcedureViewerComponent extends React.Component {
 }
 
 ProcedureViewerComponent.propTypes = {
-	procedure: PropTypes.object.isRequired,
-	getProcedureWriter: PropTypes.func.isRequired
+	procedureFile: PropTypes.string.isRequired
 };
 
 module.exports = ProcedureViewerComponent;

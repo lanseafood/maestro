@@ -96,9 +96,6 @@ module.exports = class Series {
 			// transferring step from this Series to another Series
 			destinationSeries.insertStep(insertIndex + 1, stepToTransfer);
 
-			console.log(this);
-			console.log(destinationSeries);
-
 		}
 
 		// FIXME is this right name? or should this be registered as an deleteStep? Or both?

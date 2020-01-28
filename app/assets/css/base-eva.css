@@ -227,3 +227,15 @@ img {
 .modify-step-button-container button {
 	margin: 0 2px;
 }
+
+.division-controls .modify-division-container{
+	display: none;
+}
+
+.division-controls:hover .modify-division-container{
+	display: block;
+}
+
+.division-controls button {
+	margin: 0 2px;
+}

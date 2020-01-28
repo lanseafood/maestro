@@ -18,7 +18,7 @@ class App extends React.Component {
 	}
 
 	state = {
-		procedure: null
+		procedureName: null
 	};
 
 	setProcedure = (procObject) => {
@@ -29,21 +29,26 @@ class App extends React.Component {
 			// this.program is set in ElectronProgram constructor...FIXME?
 			program: this.program,
 
+			procedureWriter: new ReactProcedureWriter(window.maestro.app, procObject),
+
 			// Set initial YAML representation of entire procedure (including activities). Changes
 			// can diff against this.
 			lastProcDefinitionYaml: YAML.dump(procObject.getDefinition())
 		});
 
 		this.setState({
-			procedure: stateHandler.state.procedure,
-			procedureWriter: new ReactProcedureWriter(window.maestro.app, procObject)
+			procedureFile: stateHandler.state.procedure.filename
+			// procedureWriter: new ReactProcedureWriter(window.maestro.app, procObject)
 		});
 
 		console.log(`Procedure set to ${procObject.name}`);
 	};
 
+	// FIXME is this still needed? Used by electron? should be easier to tell.
+	// Need to replace electrons <p>...</p> with a compoenent that at least makes it more obvious
 	getProcedureWriter = () => {
-		return this.state.procedureWriter;
+		// return this.state.procedureWriter;
+		return stateHandler.state.procedureWriter;
 	}
 
 	setProgram(program) {
@@ -55,24 +60,22 @@ class App extends React.Component {
 			return (<p>Please select a procedure file from the file:open menu</p>);
 		} else {
 			return (
-				<ProcedureSelectorComponent
-					procedureChoices={window.procedureChoices}
-					procedure={this.state.procedure}
-					setProcedure={this.setProcedure} />
+				<ProcedureSelectorComponent setProcedure={this.setProcedure} />
 			);
 		}
 	}
 
 	render() {
+		console.log('render App');
+		console.log(this.state.procedureFile);
 		return (
 			<div className='app'>
 				<HeaderComponent />
 				<div className='procedure-container' style={{ margin: '0 20px' }}>
-					{this.state.procedure ?
+					{typeof this.state.procedureFile === 'string' ?
 						(
 							<ProcedureViewerComponent
-								procedure={this.state.procedure}
-								getProcedureWriter={this.getProcedureWriter}
+								procedureFile={this.state.procedureFile}
 							/>
 						) :
 						this.renderNoProcedure()

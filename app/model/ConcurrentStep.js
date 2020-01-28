@@ -142,7 +142,9 @@ module.exports = class ConcurrentStep {
 			}
 		}
 		const numActors = Object.keys(def).length;
-		if (numActors > 1) {
+		if (numActors === 0) {
+			return false;
+		} else if (numActors > 1) {
 			return { simo: def };
 		}
 		return def;

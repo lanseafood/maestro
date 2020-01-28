@@ -1,5 +1,7 @@
 'use strict';
 
+const uuidv4 = require('uuid/v4');
+
 const Duration = require('./Duration');
 const ConcurrentStep = require('./ConcurrentStep');
 const TaskRole = require('./TaskRole');
@@ -7,6 +9,7 @@ const TaskRequirements = require('./TaskRequirements');
 const consoleHelper = require('../helpers/consoleHelper');
 const arrayHelper = require('../helpers/arrayHelper');
 const typeHelper = require('../helpers/typeHelper');
+const subscriptionHelper = require('../helpers/subscriptionHelper');
 
 const validTimeTypes = ['startTime', 'endTime', 'duration'];
 
@@ -121,7 +124,14 @@ module.exports = class Task {
 	 *                                          prior two params be part of the procedure param
 	 */
 	constructor(taskRequirementsDef, procedure) {
+		this.subscriberFns = {
+			deleteDivision: [],
+			insertDivision: []
+		};
+
 		this.title = '';
+
+		this.uuid = uuidv4();
 
 		// Why "requirements"? See TaskRequirements
 		this.taskReqs = new TaskRequirements(taskRequirementsDef, this);
@@ -150,7 +160,10 @@ module.exports = class Task {
 
 		const concurrentStepsDefs = [];
 		for (const cs of this.concurrentSteps) {
-			concurrentStepsDefs.push(cs.getDefinition());
+			const csDef = cs.getDefinition();
+			if (csDef) {
+				concurrentStepsDefs.push(csDef);
+			}
 		}
 
 		return {
@@ -159,6 +172,46 @@ module.exports = class Task {
 			steps: concurrentStepsDefs
 		};
 		// throw new Error('NOT YET DEFINED');
+	}
+
+	// FIXME this is copied* directly from Step. Create "ReloadableModel" and make them extend it?
+	// and that may be a better place than the subscriptionHelper.js file, except that maybe the
+	// stateHandler logic needs it, too...?
+	//
+	// * copied, then refactored since Series has way more subscribable functions
+	subscribe(subscriptionMethod, subscriberFn) {
+		const unsubscribeFn = subscriptionHelper.subscribe(
+			subscriberFn,
+			this.subscriberFns[subscriptionMethod]
+		);
+		return unsubscribeFn;
+	}
+
+	deleteDivision(divisionIndex) {
+		console.log(`Activity.deleteDivision, index = ${divisionIndex}`);
+		this.concurrentSteps.splice(divisionIndex, 1);
+		subscriptionHelper.run(this.subscriberFns.deleteDivision, this);
+	}
+
+	insertDivision(divisionIndex, division = null) {
+		console.log(`Activity.insertDivision, index = ${divisionIndex}`);
+		if (!division) {
+			division = new ConcurrentStep(this.getEmptyDivisionDefinition(), this.rolesDict);
+		}
+		this.concurrentSteps.splice(divisionIndex, 0, division);
+		subscriptionHelper.run(this.subscriberFns.insertDivision, this);
+	}
+
+	/**
+	 * Get the most basic form of a definition of a division for this activity
+	 */
+	getEmptyDivisionDefinition() {
+		const def = { simo: {} };
+		const colKeys = this.getColumns();
+		for (const key of colKeys) {
+			def.simo[key] = []; // create an empty array of steps for this actor
+		}
+		return def;
 	}
 
 	/**

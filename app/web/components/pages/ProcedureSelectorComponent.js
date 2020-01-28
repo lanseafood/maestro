@@ -16,7 +16,7 @@ class ProcedureSelectorComponent extends React.Component {
 	};
 
 	render() {
-		return this.props.procedureChoices.map((proc) => (
+		return window.procedureChoices.map((proc) => (
 			<button
 				key={proc}
 				onClick={this.onClick.bind(this, proc)}
@@ -29,8 +29,6 @@ class ProcedureSelectorComponent extends React.Component {
 }
 
 ProcedureSelectorComponent.propTypes = {
-	procedure: PropTypes.object,
-	procedureChoices: PropTypes.array.isRequired,
 	setProcedure: PropTypes.func.isRequired
 };
 

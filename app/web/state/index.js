@@ -122,16 +122,19 @@ function saveChangeWeb(program, activity, yamlString) {
  * @param {number} activityIndex                Activity file to save
  */
 function saveChange(program, procedure, activityIndex) {
-	const activity = procedure.tasks[activityIndex];
+	const activity = state.procedure.tasks[activityIndex];
+	console.log(`saving activity index ${activityIndex}`); // FIXME remove when done with TSing
+	console.log('procedure', procedure);
+	console.log('activity', activity);
 	const yamlString = YAML.dump(activity.getTaskDefinition());
 
 	if (window.isElectron) {
-		saveChangeElectron(program, activity, yamlString);
+		saveChangeElectron(state.program, activity, yamlString);
 	} else {
-		saveChangeWeb(program, activity, yamlString);
+		saveChangeWeb(state.program, activity, yamlString);
 	}
 
-	recordAndReportChange(procedure);
+	recordAndReportChange(state.procedure);
 }
 
 module.exports = {

@@ -396,4 +396,12 @@ module.exports = class Procedure {
 		}
 	}
 
+	getTaskByUuid(uuid) {
+		const index = this.TasksHandler.getTaskIndexByUuid(uuid);
+		if (index === -1 || index > this.tasks.length - 1) {
+			throw new Error(`Task with uuid ${uuid} not found`);
+		}
+		return this.tasks[index];
+	}
+
 };
