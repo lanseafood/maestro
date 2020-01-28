@@ -104,10 +104,13 @@ class DivisionControlsComponent extends React.PureComponent {
 		};
 
 		return (
-			<tr style={trTdStyle}>
+			<tr style={trTdStyle} className='division-controls-tr'>
 				<td colSpan="3" style={trTdStyle}>
 					<div style={wrapperStyle}>
-						<div style={contentDiv} className='division-controls'>
+						<div
+							style={contentDiv}
+							className='division-controls'
+						>
 							<div className='modify-division-hoverbox'></div>
 							<div style={controlsStyle} className='modify-division-container'>
 								{ this.props.divisionUuid !== 'last' ?
