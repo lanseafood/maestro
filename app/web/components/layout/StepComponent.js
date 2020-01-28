@@ -52,7 +52,10 @@ class StepComponent extends React.Component {
 		console.log('edit button click');
 		e.preventDefault();
 		e.stopPropagation();
+		this.doDelete();
+	}
 
+	doDelete() {
 		this.props.deleteStepFromSeries(this.props.stepIndex);
 
 		const activityIndex = stateHandler.state.procedure
@@ -60,7 +63,6 @@ class StepComponent extends React.Component {
 
 		stateHandler.saveChange(stateHandler.state.program,
 			stateHandler.state.procedure, activityIndex);
-
 	}
 
 	handleInsertStepBefore = (e) => {
@@ -172,7 +174,9 @@ class StepComponent extends React.Component {
 
 		e.preventDefault();
 		e.stopPropagation();
-
+		if (Object.keys(this.props.stepState.getDefinition()).length === 0) {
+			this.doDelete();
+		}
 		this.setState({
 			editMode: false
 			// localStepState: this.props.stepState
@@ -195,8 +199,8 @@ StepComponent.propTypes = {
 	stepIndex: PropTypes.number.isRequired,
 
 	deleteStepFromSeries: PropTypes.func.isRequired,
-	handleMoveStep: PropTypes.func.isRequired,
-	insertStepIntoSeries: PropTypes.func.isRequired
+	handleMoveStep: PropTypes.func.isRequired
+	// insertStepIntoSeries: PropTypes.func.isRequired
 };
 
 module.exports = StepComponent;

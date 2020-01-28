@@ -89,11 +89,11 @@ class DivisionControlsComponent extends React.PureComponent {
 			top: '-10px',
 			bottom: '-10px',
 			left: 0,
-			right: 0,
+			right: 0
 
 			// temporary for dev only. FIXME.
-			backgroundColor: 'red',
-			opacity: 0.2
+			// backgroundColor: 'red',
+			// opacity: 0.2
 		};
 
 		const controlsStyle = {
@@ -108,6 +108,7 @@ class DivisionControlsComponent extends React.PureComponent {
 				<td colSpan="3" style={trTdStyle}>
 					<div style={wrapperStyle}>
 						<div style={contentDiv} className='division-controls'>
+							<div className='modify-division-hoverbox'></div>
 							<div style={controlsStyle} className='modify-division-container'>
 								{ this.props.divisionUuid !== 'last' ?
 									(
@@ -131,13 +132,11 @@ class DivisionControlsComponent extends React.PureComponent {
 											onClick={this.handleAppendButtonClick}
 											className='insert-division-button'
 										>
-											insert sync block at END
+											insert sync block at end
 										</button>
 									)
 								}
-
 							</div>
-
 						</div>
 					</div>
 				</td>

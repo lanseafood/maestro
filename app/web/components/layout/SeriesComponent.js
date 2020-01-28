@@ -75,9 +75,10 @@ class SeriesComponent extends React.Component {
 		this.props.seriesState.deleteStep(stepIndex);
 	}
 
-	insertStepIntoSeries = (stepIndex) => {
-		this.props.seriesState.insertStep(stepIndex, this.props.seriesState.makeStep());
-	}
+	// FIXME delete
+	// insertStepIntoSeries = (stepIndex) => {
+	// this.props.seriesState.insertStep(stepIndex, this.props.seriesState.makeStep());
+	// }
 
 	handleMoveStep = (from, to) => {
 
@@ -128,7 +129,7 @@ class SeriesComponent extends React.Component {
 		console.log(`rendering series with colKeys = ${this.props.columnKeys}`);
 
 		return (
-			<td key={uuidv4()} colSpan={this.props.colspan}>
+			<td key={uuidv4()} colSpan={this.props.colspan} className='series-td'>
 				<div style={{ position: 'relative' }}>
 					<ol>
 						{/*
@@ -157,20 +158,22 @@ class SeriesComponent extends React.Component {
 
 									deleteStepFromSeries={this.deleteStepFromSeries}
 									handleMoveStep={this.handleMoveStep}
-									insertStepIntoSeries={this.insertStepIntoSeries}
+									// insertStepIntoSeries={this.insertStepIntoSeries}
 								/>
 							);
 						})}
 					</ol>
-					{/* <div style={{ textAlign: 'right' }}> */}
-					<InsertStepButtonComponent
-						buttonText='insert step'
-						activityUuid={this.props.activityUuid}
-						divisionUuid={this.props.divisionUuid}
-						primaryColumnKey={this.props.primaryColumnKey}
-						stepIndex={-1}
-					/>
-					{/* </div> */}
+					<div className='series-insert-step-wrapper'>
+						<div>
+							<InsertStepButtonComponent
+								buttonText='insert step'
+								activityUuid={this.props.activityUuid}
+								divisionUuid={this.props.divisionUuid}
+								primaryColumnKey={this.props.primaryColumnKey}
+								stepIndex={-1}
+							/>
+						</div>
+					</div>
 					<StepDropLocationComponent
 						canDropFn={this.canDropAtEndOfSeries}
 						dropFn={this.dropOccurredAtEndOfSeries}

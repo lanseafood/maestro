@@ -232,6 +232,12 @@ img {
 	display: none;
 }
 
+.division-controls:hover .modify-division-hoverbox {
+	background-color: black;
+	opacity: 0.1;
+	height: 100%;
+}
+
 .division-controls:hover .modify-division-container{
 	display: block;
 }
@@ -239,3 +245,17 @@ img {
 .division-controls button {
 	margin: 0 2px;
 }
+
+.series-insert-step-wrapper {
+	height: 35px;
+}
+.series-insert-step-wrapper div {
+	display: none;
+}
+
+.series-td:hover .series-insert-step-wrapper div {
+	display: block;
+}
+
+
+

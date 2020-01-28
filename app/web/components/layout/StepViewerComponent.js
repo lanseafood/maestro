@@ -61,7 +61,7 @@ const StepViewerComponent = ({
 
 	activityUuid, divisionUuid, primaryColumnKey, stepIndex,
 
-	handleEditButtonClick, handleDeleteButtonClick, handleMoveStep, handleInsertStepBefore
+	handleEditButtonClick, handleDeleteButtonClick, handleMoveStep
 }) => {
 
 	// why does this need to be set here? Is this why actors inappropriately shown in react? FIXME.
@@ -156,7 +156,6 @@ StepViewerComponent.propTypes = {
 
 	handleEditButtonClick: PropTypes.func.isRequired,
 	handleDeleteButtonClick: PropTypes.func.isRequired,
-	handleInsertStepBefore: PropTypes.func.isRequired,
 	handleMoveStep: PropTypes.func.isRequired
 };
 
