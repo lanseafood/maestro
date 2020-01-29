@@ -697,10 +697,98 @@ mod tests {
     }
 
     #[wasm_bindgen_test]
+    fn test_register_graph_converts_json_one_nodes_one_edges() {
+        let input = json!(
+          {
+            "nodes": [
+                {
+                    "id": 0,
+                    "label": "Start of EGRESS/SETUP for EV1"
+                }
+            ],
+            "edges": [],
+          }
+        );
+
+        let mut stn = STN::new();
+
+        let payload = {
+            match JsValue::from_serde(&input) {
+                Ok(p) => p,
+                Err(e) => panic!("could not create payload | {:?}", e),
+            }
+        };
+
+        let options = {
+            match JsValue::from_serde(&json!(
+              { "implicit_intervals": true }
+            )) {
+                Ok(p) => p,
+                Err(e) => panic!("could not create payload | {:?}", e),
+            }
+        };
+
+        match stn.initialize(&payload, &options) {
+            Ok(u) => assert_eq!(
+                (1_usize, 1_usize),
+                (u.0, u.1),
+                "1 node, 1 edge expected to be made"
+            ),
+            Err(e) => panic!("failed running stn.register_graph | {:?}", e),
+        }
+    }
+
+    #[wasm_bindgen_test]
     fn test_register_graph_converts_json_two_nodes_two_edges() {
         let input = json!(
           {
-            "edges": [{"minutes": 60, "source": 0, "target": 1}],
+            "nodes": [
+                {
+                    "id": 0,
+                    "label": "Start of EGRESS/SETUP for EV1"
+                },
+                {
+                    "id": 1,
+                    "label": "Start of EGRESS/SETUP for EV3"
+                }
+            ],
+            "edges": [],
+          }
+        );
+
+        let mut stn = STN::new();
+
+        let payload = {
+            match JsValue::from_serde(&input) {
+                Ok(p) => p,
+                Err(e) => panic!("could not create payload | {:?}", e),
+            }
+        };
+
+        let options = {
+            match JsValue::from_serde(&json!(
+              { "implicit_intervals": true }
+            )) {
+                Ok(p) => p,
+                Err(e) => panic!("could not create payload | {:?}", e),
+            }
+        };
+
+        match stn.initialize(&payload, &options) {
+            Ok(u) => assert_eq!(
+                (2_usize, 2_usize),
+                (u.0, u.1),
+                "2 nodes, 2 edges expected to be made"
+            ),
+            Err(e) => panic!("failed running stn.register_graph | {:?}", e),
+        }
+    }
+
+    #[wasm_bindgen_test]
+    fn test_register_graph_converts_json_two_nodes_four_edges() {
+        let input = json!(
+          {
+            "edges": [{"minutes": 60, "source": 0, "target": 1}]
           }
         );
 
@@ -726,11 +814,487 @@ mod tests {
             Ok(u) => assert_eq!(
                 (2_usize, 4_usize),
                 (u.0, u.1),
-                "Two nodes, 4 edges expected to be made"
+                "2 nodes, 4 edges expected to be made"
             ),
             Err(e) => panic!("failed running stn.register_graph | {:?}", e),
         }
     }
+
+    #[wasm_bindgen_test]
+    fn test_register_graph_converts_json_three_nodes_five_edges() {
+        let input = json!(
+          {
+            "nodes": [
+                {
+                    "id": 0,
+                    "label": "Start of EGRESS/SETUP for EV1"
+                },
+                {
+                    "id": 1,
+                    "label": "Start of EGRESS/SETUP for EV3"
+                },
+                {
+                    "id": 2,
+                    "label": "Start of EGRESS/SETUP for EV3"
+                }
+            ], 
+            "edges": [{"minutes": 60, "source": 0, "target": 1}]
+          }
+        );
+
+        let mut stn = STN::new();
+
+        let payload = {
+            match JsValue::from_serde(&input) {
+                Ok(p) => p,
+                Err(e) => panic!("could not create payload | {:?}", e),
+            }
+        };
+
+        let options = {
+            match JsValue::from_serde(&json!(
+              { "implicit_intervals": true }
+            )) {
+                Ok(p) => p,
+                Err(e) => panic!("could not create payload | {:?}", e),
+            }
+        };
+
+        match stn.initialize(&payload, &options) {
+            Ok(u) => assert_eq!(
+                (3_usize, 5_usize),
+                (u.0, u.1),
+                "3 nodes, 5 edges expected to be made"
+            ),
+            Err(e) => panic!("failed running stn.register_graph | {:?}", e),
+        }
+    }
+
+    #[wasm_bindgen_test]
+    fn test_register_graph_converts_json_four_nodes_eight_edges() {
+        let input = json!(
+          {
+            "nodes": [
+                {
+                    "id": 0,
+                    "label": "Start of EGRESS/SETUP for EV1"
+                },
+                {
+                    "id": 1,
+                    "label": "Start of EGRESS/SETUP for EV3"
+                },
+                {
+                    "id": 2,
+                    "label": "Start of EGRESS/SETUP for EV3"
+                },
+                {
+                    "id": 3,
+                    "label": "Start of EGRESS/SETUP for EV3"
+                }
+            ], 
+            "edges": [{"minutes": 60, "source": 0, "target": 1},
+                    {"minutes": 30, "source": 2, "target": 3}],
+          }
+        );
+
+        let mut stn = STN::new();
+
+        let payload = {
+            match JsValue::from_serde(&input) {
+                Ok(p) => p,
+                Err(e) => panic!("could not create payload | {:?}", e),
+            }
+        };
+
+        let options = {
+            match JsValue::from_serde(&json!(
+              { "implicit_intervals": true }
+            )) {
+                Ok(p) => p,
+                Err(e) => panic!("could not create payload | {:?}", e),
+            }
+        };
+
+        match stn.initialize(&payload, &options) {
+            Ok(u) => assert_eq!(
+                (4_usize, 8_usize),
+                (u.0, u.1),
+                "4 nodes, 8 edges expected to be made"
+            ),
+            Err(e) => panic!("failed running stn.register_graph | {:?}", e),
+        }
+    }
+
+    #[wasm_bindgen_test]
+    fn test_register_graph_converts_json_four_nodes_ten_edges() {
+        let input = json!(
+          {
+            "nodes": [
+                {
+                    "id": 0,
+                    "label": "Start of EGRESS/SETUP for EV1"
+                },
+                {
+                    "id": 1,
+                    "label": "Start of EGRESS/SETUP for EV3"
+                },
+                {
+                    "id": 2,
+                    "label": "Start of EGRESS/SETUP for EV3"
+                },
+                {
+                    "id": 3,
+                    "label": "Start of EGRESS/SETUP for EV3"
+                }
+            ], 
+            "edges": [{"minutes": 15, "source": 0, "target": 1},
+                    {"minutes": 20, "source": 2, "target": 3},
+                    {"minutes": 25, "source": 1, "target": 2}],
+          }
+        );
+
+        let mut stn = STN::new();
+
+        let payload = {
+            match JsValue::from_serde(&input) {
+                Ok(p) => p,
+                Err(e) => panic!("could not create payload | {:?}", e),
+            }
+        };
+
+        let options = {
+            match JsValue::from_serde(&json!(
+              { "implicit_intervals": true }
+            )) {
+                Ok(p) => p,
+                Err(e) => panic!("could not create payload | {:?}", e),
+            }
+        };
+
+        match stn.initialize(&payload, &options) {
+            Ok(u) => assert_eq!(
+                (4_usize, 10_usize),
+                (u.0, u.1),
+                "4 nodes, 10 edges expected to be made"
+            ),
+            Err(e) => panic!("failed running stn.register_graph | {:?}", e),
+        }
+    }
+
+    // #[wasm_bindgen_test]
+    // fn test_full_master_maestro_json_input() {
+    //     let input = json!(
+    //         {
+    //         "edges": [
+    //             {
+    //                 "action": "EV1 performing EGRESS/SETUP",
+    //                 "minutes": 15,
+    //                 "source": 0,
+    //                 "target": 2
+    //             },
+    //             {
+    //                 "action": "EV1 --> EV1 sync offset for EGRESS/SETUP",
+    //                 "minutes": 0,
+    //                 "source": 0,
+    //                 "target": 0
+    //             },
+    //             {
+    //                 "action": "EV3 performing EGRESS/SETUP",
+    //                 "minutes": 45,
+    //                 "source": 1,
+    //                 "target": 3
+    //             },
+    //             {
+    //                 "action": "EV3 --> EV1 sync offset for EGRESS/SETUP",
+    //                 "minutes": 0,
+    //                 "source": 1,
+    //                 "target": 0
+    //             },
+    //             {
+    //                 "action": "EV1 performing MISSE 7 RETRIEVE",
+    //                 "minutes": 60,
+    //                 "source": 2,
+    //                 "target": 4
+    //             },
+    //             {
+    //                 "action": "EV1 --> EV1 sync offset for MISSE 7 RETRIEVE",
+    //                 "minutes": 0,
+    //                 "source": 2,
+    //                 "target": 2
+    //             },
+    //             {
+    //                 "action": "EV3 performing MISSE 7 RETRIEVE",
+    //                 "minutes": 60,
+    //                 "source": 3,
+    //                 "target": 5
+    //             },
+    //             {
+    //                 "action": "EV3 --> EV1 sync offset for MISSE 7 RETRIEVE",
+    //                 "minutes": 0,
+    //                 "source": 3,
+    //                 "target": 2
+    //             },
+    //             {
+    //                 "action": "EV1 performing MISSE 8 Install",
+    //                 "minutes": 40,
+    //                 "source": 4,
+    //                 "target": 7
+    //             },
+    //             {
+    //                 "action": "EV1 --> EV1 sync offset for MISSE 8 Install",
+    //                 "minutes": 0,
+    //                 "source": 4,
+    //                 "target": 4
+    //             },
+    //             {
+    //                 "action": "EV3 performing S3 CETA Light Install",
+    //                 "minutes": 25,
+    //                 "source": 5,
+    //                 "target": 6
+    //             },
+    //             {
+    //                 "action": "EV3 --> EV3 sync offset for S3 CETA Light Install",
+    //                 "minutes": 0,
+    //                 "source": 5,
+    //                 "target": 5
+    //             },
+    //             {
+    //                 "action": "EV3 performing Stbd SARJ Cover 7 Install",
+    //                 "minutes": 25,
+    //                 "source": 6,
+    //                 "target": 8
+    //             },
+    //             {
+    //                 "action": "EV3 --> EV3 sync offset for Stbd SARJ Cover 7 Install",
+    //                 "minutes": 0,
+    //                 "source": 6,
+    //                 "target": 6
+    //             },
+    //             {
+    //                 "action": "EV1 performing P3/P4 NH3 Jumper Install",
+    //                 "minutes": 35,
+    //                 "source": 7,
+    //                 "target": 9
+    //             },
+    //             {
+    //                 "action": "EV1 --> EV1 sync offset for P3/P4 NH3 Jumper Install",
+    //                 "minutes": 0,
+    //                 "source": 7,
+    //                 "target": 7
+    //             },
+    //             {
+    //                 "action": "EV3 performing P3/P4 NH3 Jumper Install",
+    //                 "minutes": 25,
+    //                 "source": 8,
+    //                 "target": 10
+    //             },
+    //             {
+    //                 "action": "EV3 --> EV1 sync offset for P3/P4 NH3 Jumper Install",
+    //                 "minutes": 10,
+    //                 "source": 8,
+    //                 "target": 7
+    //             },
+    //             {
+    //                 "action": "EV1 performing P5/P6 NH3 Jumper Install / N2 Vent",
+    //                 "minutes": 35,
+    //                 "source": 9,
+    //                 "target": 11
+    //             },
+    //             {
+    //                 "action": "EV1 --> EV1 sync offset for P5/P6 NH3 Jumper Install / N2 Vent",
+    //                 "minutes": 0,
+    //                 "source": 9,
+    //                 "target": 9
+    //             },
+    //             {
+    //                 "action": "EV3 performing P3/P4 NH3 Jumper Temp Stow",
+    //                 "minutes": 35,
+    //                 "source": 10,
+    //                 "target": 12
+    //             },
+    //             {
+    //                 "action": "EV3 --> EV3 sync offset for P3/P4 NH3 Jumper Temp Stow",
+    //                 "minutes": 0,
+    //                 "source": 10,
+    //                 "target": 10
+    //             },
+    //             {
+    //                 "action": "EV1 performing EWC Antenna Install",
+    //                 "minutes": 140,
+    //                 "source": 11,
+    //                 "target": 13
+    //             },
+    //             {
+    //                 "action": "EV1 --> EV1 sync offset for EWC Antenna Install",
+    //                 "minutes": 0,
+    //                 "source": 11,
+    //                 "target": 11
+    //             },
+    //             {
+    //                 "action": "EV3 performing EWC Antenna Install",
+    //                 "minutes": 165,
+    //                 "source": 12,
+    //                 "target": 15
+    //             },
+    //             {
+    //                 "action": "EV3 --> EV1 sync offset for EWC Antenna Install",
+    //                 "minutes": 0,
+    //                 "source": 12,
+    //                 "target": 11
+    //             },
+    //             {
+    //                 "action": "EV1 performing VTEB Cleanup",
+    //                 "minutes": 25,
+    //                 "source": 13,
+    //                 "target": 14
+    //             },
+    //             {
+    //                 "action": "EV1 --> EV1 sync offset for VTEB Cleanup",
+    //                 "minutes": 0,
+    //                 "source": 13,
+    //                 "target": 13
+    //             },
+    //             {
+    //                 "action": "EV1 performing Cleanup / Ingress",
+    //                 "minutes": 30,
+    //                 "source": 14,
+    //                 "target": 16
+    //             },
+    //             {
+    //                 "action": "EV1 --> EV1 sync offset for Cleanup / Ingress",
+    //                 "minutes": 0,
+    //                 "source": 14,
+    //                 "target": 14
+    //             },
+    //             {
+    //                 "action": "EV3 performing Cleanup / Ingress",
+    //                 "minutes": 30,
+    //                 "source": 15,
+    //                 "target": 17
+    //             },
+    //             {
+    //                 "action": "EV3 --> EV1 sync offset for Cleanup / Ingress",
+    //                 "minutes": 0,
+    //                 "source": 15,
+    //                 "target": 14
+    //             },
+    //             {
+    //                 "action": "EV1 --> EV1 sync offset for procedure end",
+    //                 "minutes": 0,
+    //                 "source": 16,
+    //                 "target": 16
+    //             },
+    //             {
+    //                 "action": "EV3 --> EV1 sync offset for procedure end",
+    //                 "minutes": 0,
+    //                 "source": 17,
+    //                 "target": 16
+    //             }
+    //         ],
+    //         "nodes": [
+    //             {
+    //                 "id": 0,
+    //                 "label": "Start of EGRESS/SETUP for EV1"
+    //             },
+    //             {
+    //                 "id": 1,
+    //                 "label": "Start of EGRESS/SETUP for EV3"
+    //             },
+    //             {
+    //                 "id": 2,
+    //                 "label": "Start of MISSE 7 RETRIEVE for EV1"
+    //             },
+    //             {
+    //                 "id": 3,
+    //                 "label": "Start of MISSE 7 RETRIEVE for EV3"
+    //             },
+    //             {
+    //                 "id": 4,
+    //                 "label": "Start of MISSE 8 Install for EV1"
+    //             },
+    //             {
+    //                 "id": 5,
+    //                 "label": "Start of S3 CETA Light Install for EV3"
+    //             },
+    //             {
+    //                 "id": 6,
+    //                 "label": "Start of Stbd SARJ Cover 7 Install for EV3"
+    //             },
+    //             {
+    //                 "id": 7,
+    //                 "label": "Start of P3/P4 NH3 Jumper Install for EV1"
+    //             },
+    //             {
+    //                 "id": 8,
+    //                 "label": "Start of P3/P4 NH3 Jumper Install for EV3"
+    //             },
+    //             {
+    //                 "id": 9,
+    //                 "label": "Start of P5/P6 NH3 Jumper Install / N2 Vent for EV1"
+    //             },
+    //             {
+    //                 "id": 10,
+    //                 "label": "Start of P3/P4 NH3 Jumper Temp Stow for EV3"
+    //             },
+    //             {
+    //                 "id": 11,
+    //                 "label": "Start of EWC Antenna Install for EV1"
+    //             },
+    //             {
+    //                 "id": 12,
+    //                 "label": "Start of EWC Antenna Install for EV3"
+    //             },
+    //             {
+    //                 "id": 13,
+    //                 "label": "Start of VTEB Cleanup for EV1"
+    //             },
+    //             {
+    //                 "id": 14,
+    //                 "label": "Start of Cleanup / Ingress for EV1"
+    //             },
+    //             {
+    //                 "id": 15,
+    //                 "label": "Start of Cleanup / Ingress for EV3"
+    //             },
+    //             {
+    //                 "id": 16,
+    //                 "label": "End of procedure for EV1"
+    //             },
+    //             {
+    //                 "id": 17,
+    //                 "label": "End of procedure for EV3"
+    //             }
+    //         ]}
+    //         );
+
+    //     let mut stn = STN::new();
+
+    //     let payload = {
+    //         match JsValue::from_serde(&input) {
+    //             Ok(p) => p,
+    //             Err(e) => panic!("could not create payload | {:?}", e),
+    //         }
+    //     };
+
+    //     let options = {
+    //         match JsValue::from_serde(&json!(
+    //           { "implicit_intervals": true }
+    //         )) {
+    //             Ok(p) => p,
+    //             Err(e) => panic!("could not create payload | {:?}", e),
+    //         }
+    //     };
+
+    //     match stn.initialize(&payload, &options) {
+    //         Ok(u) => assert_eq!(
+    //             (18_usize, 34_usize),
+    //             (u.0, u.1),
+    //             "18 nodes, 34 edges expected to be made"
+    //         ),
+    //         Err(e) => panic!("failed running stn.register_graph | {:?}", e),
+    //     }
+
+    // }
 
     #[test]
     fn test_perform_apsp_against_walkthrough_data() -> Result<(), String> {
