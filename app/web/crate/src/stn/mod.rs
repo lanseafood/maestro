@@ -697,7 +697,7 @@ mod tests {
     }
 
     #[wasm_bindgen_test]
-    fn test_register_graph_converts_json_one_nodes_one_edges() {
+    fn test_register_graph_converts_json_one_nodes_no_edges() {
         let input = json!(
           {
             "nodes": [
@@ -732,14 +732,14 @@ mod tests {
             Ok(u) => assert_eq!(
                 (1_usize, 1_usize),
                 (u.0, u.1),
-                "1 node, 1 edge expected to be made"
+                "1 node, 1 edge expected to be made given no edges"
             ),
             Err(e) => panic!("failed running stn.register_graph | {:?}", e),
         }
     }
 
     #[wasm_bindgen_test]
-    fn test_register_graph_converts_json_two_nodes_two_edges() {
+    fn test_register_graph_converts_json_two_nodes_no_edges() {
         let input = json!(
           {
             "nodes": [
@@ -778,14 +778,14 @@ mod tests {
             Ok(u) => assert_eq!(
                 (2_usize, 2_usize),
                 (u.0, u.1),
-                "2 nodes, 2 edges expected to be made"
+                "2 nodes, 2 edges expected to be made given no edges"
             ),
             Err(e) => panic!("failed running stn.register_graph | {:?}", e),
         }
     }
 
     #[wasm_bindgen_test]
-    fn test_register_graph_converts_json_two_nodes_four_edges() {
+    fn test_register_graph_converts_json_two_nodes_one_edges() {
         let input = json!(
           {
             "edges": [{"minutes": 60, "source": 0, "target": 1}]
@@ -814,31 +814,18 @@ mod tests {
             Ok(u) => assert_eq!(
                 (2_usize, 4_usize),
                 (u.0, u.1),
-                "2 nodes, 4 edges expected to be made"
+                "2 nodes, 4 edges expected to be made from given one edge"
             ),
             Err(e) => panic!("failed running stn.register_graph | {:?}", e),
         }
     }
 
     #[wasm_bindgen_test]
-    fn test_register_graph_converts_json_three_nodes_five_edges() {
+    fn test_register_graph_converts_json_three_nodes_two_edges() {
         let input = json!(
-          {
-            "nodes": [
-                {
-                    "id": 0,
-                    "label": "Start of EGRESS/SETUP for EV1"
-                },
-                {
-                    "id": 1,
-                    "label": "Start of EGRESS/SETUP for EV3"
-                },
-                {
-                    "id": 2,
-                    "label": "Start of EGRESS/SETUP for EV3"
-                }
-            ], 
-            "edges": [{"minutes": 60, "source": 0, "target": 1}]
+          { 
+            "edges": [{"minutes": 60, "source": 0, "target": 1},
+            {"minutes": 60, "source": 2, "target": 1}]
           }
         );
 
@@ -862,36 +849,18 @@ mod tests {
 
         match stn.initialize(&payload, &options) {
             Ok(u) => assert_eq!(
-                (3_usize, 5_usize),
+                (3_usize, 7_usize),
                 (u.0, u.1),
-                "3 nodes, 5 edges expected to be made"
+                "3 nodes, 7 edges expected to be made from given 2 edges"
             ),
             Err(e) => panic!("failed running stn.register_graph | {:?}", e),
         }
     }
 
     #[wasm_bindgen_test]
-    fn test_register_graph_converts_json_four_nodes_eight_edges() {
+    fn test_register_graph_converts_json_four_nodes_two_edges() {
         let input = json!(
           {
-            "nodes": [
-                {
-                    "id": 0,
-                    "label": "Start of EGRESS/SETUP for EV1"
-                },
-                {
-                    "id": 1,
-                    "label": "Start of EGRESS/SETUP for EV3"
-                },
-                {
-                    "id": 2,
-                    "label": "Start of EGRESS/SETUP for EV3"
-                },
-                {
-                    "id": 3,
-                    "label": "Start of EGRESS/SETUP for EV3"
-                }
-            ], 
             "edges": [{"minutes": 60, "source": 0, "target": 1},
                     {"minutes": 30, "source": 2, "target": 3}],
           }
@@ -919,34 +888,16 @@ mod tests {
             Ok(u) => assert_eq!(
                 (4_usize, 8_usize),
                 (u.0, u.1),
-                "4 nodes, 8 edges expected to be made"
+                "4 nodes, 8 edges expected to be made from given 2 edges"
             ),
             Err(e) => panic!("failed running stn.register_graph | {:?}", e),
         }
     }
 
     #[wasm_bindgen_test]
-    fn test_register_graph_converts_json_four_nodes_ten_edges() {
+    fn test_register_graph_converts_json_four_nodes_three_edges() {
         let input = json!(
-          {
-            "nodes": [
-                {
-                    "id": 0,
-                    "label": "Start of EGRESS/SETUP for EV1"
-                },
-                {
-                    "id": 1,
-                    "label": "Start of EGRESS/SETUP for EV3"
-                },
-                {
-                    "id": 2,
-                    "label": "Start of EGRESS/SETUP for EV3"
-                },
-                {
-                    "id": 3,
-                    "label": "Start of EGRESS/SETUP for EV3"
-                }
-            ], 
+          { 
             "edges": [{"minutes": 15, "source": 0, "target": 1},
                     {"minutes": 20, "source": 2, "target": 3},
                     {"minutes": 25, "source": 1, "target": 2}],
@@ -975,7 +926,7 @@ mod tests {
             Ok(u) => assert_eq!(
                 (4_usize, 10_usize),
                 (u.0, u.1),
-                "4 nodes, 10 edges expected to be made"
+                "4 nodes, 10 edges expected to be made from given 3 edges"
             ),
             Err(e) => panic!("failed running stn.register_graph | {:?}", e),
         }
